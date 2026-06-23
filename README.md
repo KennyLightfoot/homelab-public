@@ -48,8 +48,8 @@ This portfolio is aimed at entry-level roles in:
 | **Main PC** | Burst compute, local AI (Ollama). |
 | **Old Lenovo** | Wazuh-monitored endpoint + study box. |
 
-**Hypervisor:** Proxmox VE
-**Networking:** OPNsense VM (`192.168.1.50:8006`) routing between segmented internal bridges
+**Hypervisor:** Proxmox VE at `192.168.1.50:8006`
+**Networking:** OPNsense VM routing between segmented internal bridges
 
 ---
 
@@ -57,7 +57,7 @@ This portfolio is aimed at entry-level roles in:
 
 | ID | Name | Type | RAM | Purpose |
 |---|---|---|---|---|
-| 100 | `Carlvis-Ubuntu` | VM | 12 GB | AI/business infra — Docker host for all services |
+| 100 | `Carlvis-Ubuntu` | VM | 12 GB | Docker services host for monitoring, DNS, dashboards, and lab services |
 | 101 | `opnsense` | VM | 2 GB | Lab router/firewall |
 | 200 | `lan-box` | LXC | ~0.75 GB | Target host on LAN segment |
 | 201 | `dmz-box` | LXC | ~0.75 GB | Target host on DMZ segment |
