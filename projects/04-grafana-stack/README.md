@@ -32,7 +32,7 @@ Deployed a full observability stack on Carlvis using Docker. Prometheus scrapes 
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│                Carlvis VM (192.168.1.234)            │
+│                Carlvis VM (private LAN)              │
 │                                                     │
 │  ┌─────────────┐    ┌─────────────┐                 │
 │  │node-exporter│    │   cAdvisor  │                 │
@@ -93,9 +93,9 @@ Deployed a full observability stack on Carlvis using Docker. Prometheus scrapes 
 All components run as Docker containers on Carlvis. Prometheus is configured with a `prometheus.yml` file that defines which targets to scrape.
 
 **Access:**
-- Grafana: `http://192.168.1.234:3000` (login: admin)
-- Prometheus: `http://192.168.1.234:9090`
-- Prometheus targets: `http://192.168.1.234:9090/targets`
+- Grafana: internal-only endpoint on the private LAN
+- Prometheus: internal-only endpoint on the private LAN
+- Prometheus targets page: internal-only endpoint on the private LAN
 
 ---
 
@@ -136,6 +136,13 @@ Per-container metrics for all Docker workloads. Containers visible at time of se
 ---
 
 ## Prometheus Targets
+
+## Validation Evidence
+
+- Dashboard screenshots confirm host-level and container-level metrics rendering correctly
+- Prometheus is successfully scraping node-exporter, cAdvisor, and itself
+- Host metrics captured include CPU, RAM, disk, network, and uptime
+- Container visibility includes Grafana, homepage, Redis, Postgres, and other workloads
 
 As of setup, two targets are actively UP:
 

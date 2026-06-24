@@ -36,10 +36,10 @@ This mirrors how enterprise networks use tools like Snort, Suricata, or cloud-na
 Internet
     │
     ▼
-Home Router (192.168.1.254)
+Home Router (private gateway)
     │
     ▼
-OPNsense WAN (vtnet0 — 192.168.1.249)
+OPNsense WAN (`vtnet0` on private WAN)
     │
     ├── Suricata (PCAP mode) ←── watches all traffic here
     │       │
@@ -131,36 +131,43 @@ The rule manifest is managed in `/usr/local/etc/suricata/installed_rules.yaml` w
 Confirm Suricata is running and which interface it's on:
 
 ```bash
-ssh <opnsense-admin>@192.168.1.249 "ps aux | grep suricata"
+ssh <opnsense-admin>@<firewall-mgmt-ip> "ps aux | grep suricata"
 # Expected: suricata -D --pcap=vtnet0 --pidfile /var/run/suricata.pid ...
 ```
 
 Confirm rule files are present:
 
 ```bash
-ssh <opnsense-admin>@192.168.1.249 "ls /usr/local/etc/suricata/opnsense.rules/*.rules"
+ssh <opnsense-admin>@<firewall-mgmt-ip> "ls /usr/local/etc/suricata/opnsense.rules/*.rules"
 ```
 
 Check live traffic events in EVE JSON log:
 
 ```bash
-ssh <opnsense-admin>@192.168.1.249 "tail -5 /var/log/suricata/eve.json"
+ssh <opnsense-admin>@<firewall-mgmt-ip> "tail -5 /var/log/suricata/eve.json"
 ```
 
 Check for any alerts:
 
 ```bash
-ssh <opnsense-admin>@192.168.1.249 "grep '\"event_type\":\"alert\"' /var/log/suricata/eve.json | wc -l"
+ssh <opnsense-admin>@<firewall-mgmt-ip> "grep '\"event_type\":\"alert\"' /var/log/suricata/eve.json | wc -l"
 ```
 
 ---
 
 ## Viewing Alerts
 
+## Validation Evidence
+
+- IDS settings screenshot confirms passive PCAP mode on the WAN interface
+- Alerts screenshot confirms live detections from enabled rulesets
+- Verification steps confirm Suricata process, rule files, and EVE JSON logging
+- EVE JSON output is explicitly prepared for downstream SIEM ingestion
+
 OPNsense WebGUI (via SSH tunnel):
 
 ```bash
-ssh -L 8443:127.0.0.1:443 <opnsense-admin>@192.168.1.249
+ssh -L 8443:127.0.0.1:443 <opnsense-admin>@<firewall-mgmt-ip>
 # then: https://127.0.0.1:8443
 ```
 

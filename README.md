@@ -3,6 +3,8 @@
 > **Cloud Engineering & Security Portfolio**
 > Hands-on infrastructure projects built on a self-hosted Proxmox environment, documenting real-world networking, security, and cloud engineering skills.
 
+> **Note:** Private RFC1918 addresses, management URLs, and admin-specific access details are redacted or generalized in this public repo. The focus here is architecture, validation, and operational reasoning.
+
 ## About
 
 Working toward an entry-level cloud engineering / cloud security role.
@@ -43,12 +45,12 @@ This portfolio is aimed at entry-level roles in:
 
 | Machine | Role |
 |---|---|
-| **Mini PC (`pve-homelab`)** | Proxmox VE host — `192.168.1.50`, ~32 GB RAM. Always-on lab fabric. |
+| **Mini PC (`pve-homelab`)** | Proxmox VE host, ~32 GB RAM. Always-on lab fabric. |
 | **Fedora Laptop** | Cockpit — drives everything via SSH. Git, Terraform, AWS CLI live here. |
 | **Main PC** | Burst compute, local AI (Ollama). |
 | **Old Lenovo** | Wazuh-monitored endpoint + study box. |
 
-**Hypervisor:** Proxmox VE at `192.168.1.50:8006`
+**Hypervisor:** Proxmox VE management on a private subnet
 **Networking:** OPNsense VM routing between segmented internal bridges
 
 ---
@@ -65,26 +67,34 @@ This portfolio is aimed at entry-level roles in:
 
 ### Services Running on Carlvis (VM 100)
 
-| Service | Port | Purpose |
-|---|---|---|
-| Pi-hole | `:53` / `:8080` | Network-wide DNS ad blocking |
-| Uptime Kuma | `:3002` | Uptime monitoring for hosted services |
-| Portainer | `:9000` / `:9443` | Docker container management UI |
-| Grafana | `:3000` | Metrics dashboards |
-| Prometheus | `:9090` | Metrics collection |
-| InfluxDB | `:8086` | Time-series database |
-| cAdvisor | `:8085` | Container resource metrics |
-| Node Exporter | `:9101` | Host-level metrics |
-| n8n | `:5678` | Workflow automation |
-| Open WebUI | `:3010` | LLM chat interface |
-| SearXNG | `:8888` | Private search engine |
-| Ollama | — | Local LLM backend |
-| Qdrant | `:6333` | Vector database (RAG) |
-| Homepage | `:8082` | Internal service dashboard |
+| Service | Purpose |
+|---|---|
+| Pi-hole | Network-wide DNS ad blocking |
+| Uptime Kuma | Uptime monitoring for hosted services |
+| Portainer | Docker container management UI |
+| Grafana | Metrics dashboards |
+| Prometheus | Metrics collection |
+| InfluxDB | Time-series database |
+| cAdvisor | Container resource metrics |
+| Node Exporter | Host-level metrics |
+| n8n | Workflow automation |
+| Open WebUI | LLM chat interface |
+| SearXNG | Private search engine |
+| Ollama | Local LLM backend |
+| Qdrant | Vector database (RAG) |
+| Homepage | Internal service dashboard |
 
 ---
 
 ## Projects
+
+### Fastest Proof for Recruiters
+
+If you only open three projects, start here:
+
+1. **OPNsense Network Segmentation** — proves subnetting, firewalling, trust zones, and validation
+2. **Grafana Monitoring Stack** — proves observability, exporters, Prometheus, and dashboard reasoning
+3. **Suricata IDS** — proves security tooling, rulesets, detection strategy, and SIEM prep
 
 ### ✅ [Project 1: OPNsense Network Segmentation](./projects/01-opnsense-segmentation/)
 **Status:** Complete
@@ -93,6 +103,8 @@ This portfolio is aimed at entry-level roles in:
 Built a segmented lab network using three Proxmox bridges (LAN, DMZ, Lab) and an OPNsense VM as the router/firewall. LXC containers deployed in each segment. Isolation proven: DMZ and Lab cannot reach LAN; both reach internet.
 
 **Tech Stack:** Proxmox VE, OPNsense, LXC
+
+**Validation Evidence:** documented bridge layout, routing path through OPNsense, and proof that lower-trust segments cannot reach LAN while retaining internet access
 
 ---
 
@@ -104,6 +116,8 @@ Deployed Pi-hole on Carlvis as a network-wide DNS sinkhole. Documented Docker de
 
 **Tech Stack:** Docker, Pi-hole, Carlvis-Ubuntu
 
+**Validation Evidence:** dashboard screenshots, live query log, gravity/blocklist counts, and DNS lookup tests for blocked vs allowed domains
+
 ---
 
 ### ✅ [Project 3: Uptime Kuma Monitoring](./projects/03-uptime-kuma/)
@@ -113,6 +127,8 @@ Deployed Pi-hole on Carlvis as a network-wide DNS sinkhole. Documented Docker de
 Deployed Uptime Kuma on Carlvis to monitor external web availability, internal service ports, and core infrastructure hosts.
 
 **Tech Stack:** Docker, Uptime Kuma, Carlvis-Ubuntu
+
+**Validation Evidence:** uptime dashboard screenshot, 9 active monitors, and mixed HTTP/TCP/ICMP checks across public and internal targets
 
 ---
 
@@ -124,6 +140,8 @@ Full observability stack on Carlvis: Prometheus scraping node-exporter and cAdvi
 
 **Tech Stack:** Docker, Grafana, Prometheus, InfluxDB, cAdvisor, Node Exporter
 
+**Validation Evidence:** dashboard screenshots, active Prometheus targets, host metrics, and per-container visibility
+
 ---
 
 ### ✅ [Project 5: Suricata IDS](./projects/05-suricata-ids/)
@@ -133,6 +151,8 @@ Full observability stack on Carlvis: Prometheus scraping node-exporter and cAdvi
 Deployed Suricata on OPNsense in passive PCAP IDS mode on the WAN interface. Enabled Emerging Threats and abuse.ch rulesets, confirmed alert logging, and prepared EVE JSON output for future Wazuh SIEM integration.
 
 **Tech Stack:** OPNsense, Suricata, Emerging Threats Open, abuse.ch
+
+**Validation Evidence:** IDS settings screenshot, live alerts screenshot, enabled rulesets, and EVE JSON output prepared for SIEM ingestion
 
 ---
 
@@ -163,6 +183,23 @@ Mirror the home lab network segments as AWS VPC infrastructure in Terraform — 
 **Skills:** WireGuard, VPN, AWS, Network Architecture
 
 Capstone — bridge the home lab and AWS VPC over an encrypted tunnel.
+
+---
+
+## Interview Positioning
+
+This repo is strongest when positioned as:
+
+- **Support + infrastructure troubleshooting proof** for Help Desk / Technical Support / Application Support
+- **Monitoring + network fundamentals proof** for NOC / Cloud Support
+- **Security exposure proof** for junior SOC / cloud security-adjacent roles
+
+Best framing in interviews:
+
+- Built segmented networks, not just flat Docker labs
+- Monitored real services with Prometheus, Grafana, and Uptime Kuma
+- Added DNS-layer filtering and passive IDS to understand detection before prevention
+- Documented what was deployed, why it mattered, and how it was verified
 
 ---
 

@@ -24,7 +24,7 @@ Deployed Uptime Kuma as a self-hosted uptime monitoring solution running in Dock
 |---|---|
 | Docker | Container runtime |
 | Uptime Kuma | Uptime monitoring |
-| Carlvis-Ubuntu (VM 100) | Host — `192.168.1.234` |
+| Carlvis-Ubuntu (VM 100) | Host on a private LAN |
 
 ---
 
@@ -48,7 +48,7 @@ docker run -d \
   louislam/uptime-kuma:latest
 ```
 
-**Access:** `http://192.168.1.234:3002`
+**Access:** internal-only endpoint on the private LAN
 
 > Port 3002 is used on the host (instead of the default 3001) to avoid conflicts with other services.
 
@@ -68,19 +68,19 @@ TCP Port monitors check that the service port is accepting connections. Used for
 
 | Name | Host | Port | Interval |
 |---|---|---|---|
-| Grafana | 192.168.1.234 | 3000 | 60s |
-| Pi-hole | 192.168.1.234 | 8080 | 60s |
-| Portainer | 192.168.1.234 | 9000 | 60s |
-| n8n | 192.168.1.234 | 5678 | 60s |
-| Open WebUI | 192.168.1.234 | 3010 | 60s |
-| Homepage | 192.168.1.234 | 8082 | 60s |
+| Grafana | Private VM host | 3000 | 60s |
+| Pi-hole | Private VM host | 8080 | 60s |
+| Portainer | Private VM host | 9000 | 60s |
+| n8n | Private VM host | 5678 | 60s |
+| Open WebUI | Private VM host | 3010 | 60s |
+| Homepage | Private VM host | 8082 | 60s |
 
 ### Infrastructure — Ping
 
 | Name | Host | Interval |
 |---|---|---|
-| Carlvis VM | 192.168.1.234 | 60s |
-| Proxmox Host | 192.168.1.50 | 60s |
+| Carlvis VM | Private VM host | 60s |
+| Proxmox Host | Private hypervisor host | 60s |
 
 ---
 
@@ -99,6 +99,13 @@ Uptime Kuma supports several monitor types — choosing the right one matters:
 ## Results
 
 All 9 monitors were up at the time of capture. Uptime percentages reflect available history, so earlier outages remain visible even after a service recovers.
+
+## Validation Evidence
+
+- Dashboard screenshot shows 9 active monitors
+- Mixed monitor types in use: HTTP(s), TCP Port, and Ping
+- Internal services, core hosts, and one public endpoint all have live health checks
+- Historical outage visibility is preserved for troubleshooting context
 
 | Monitor | Status | Uptime (30-day) |
 |---|---|---|
