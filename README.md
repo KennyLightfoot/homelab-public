@@ -1,7 +1,7 @@
 # Homelab Documentation
 
-> **Cloud Engineering & Security Portfolio**
-> Hands-on infrastructure projects built on a self-hosted Proxmox environment, documenting real-world networking, security, and cloud engineering skills.
+> **Support / NOC / Cloud Support Portfolio**
+> Hands-on infrastructure projects built on a self-hosted Proxmox environment, documenting real-world troubleshooting, monitoring, network validation, DNS support, and security fundamentals.
 
 > **Note:** Private RFC1918 addresses, management URLs, and admin-specific access details are redacted or generalized in this public repo. The focus here is architecture, validation, and operational reasoning.
 
@@ -10,7 +10,7 @@
 Working toward an entry-level cloud engineering / cloud security role.
 Building this lab as part of my WGU B.S. in Cloud & Network Engineering (AWS track).
 
-**Certs:** CompTIA A+, Linux Essentials, ITIL 4
+**Certs:** CompTIA Network+, CompTIA A+, Linux Essentials, ITIL 4
 
 ---
 
@@ -93,8 +93,8 @@ This portfolio is aimed at entry-level roles in:
 If you only open three projects, start here:
 
 1. **OPNsense Network Segmentation** — proves subnetting, firewalling, trust zones, and validation
-2. **Grafana Monitoring Stack** — proves observability, exporters, Prometheus, and dashboard reasoning
-3. **Suricata IDS** — proves security tooling, rulesets, detection strategy, and SIEM prep
+2. **Pi-hole DNS** — proves DNS troubleshooting, filtering, query-log review, and support-style validation
+3. **Uptime Kuma Monitoring** — proves service monitoring, alert triage, outage verification, and recovery documentation
 
 ### ✅ [Project 1: OPNsense Network Segmentation](./projects/01-opnsense-segmentation/)
 **Status:** Complete
