@@ -183,6 +183,14 @@ All five tests passed. Segment isolation is confirmed.
 
 ---
 
+## Support Incident Write-Up
+
+- [Incident 001: Firewall Policy Validation](./incidents/001-firewall-policy-validation.md)
+
+This incident documents the support/NOC-style validation process: symptom, scope, theory, tests performed, root cause, fix, verification, and prevention.
+
+---
+
 ## Key Concepts Learned
 
 - **Virtual switches vs routed networks** — bridges are layer 2 (like a physical switch); routing between them requires a layer 3 device (OPNsense)
