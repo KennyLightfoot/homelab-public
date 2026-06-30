@@ -15,6 +15,20 @@ Deployed Uptime Kuma as a self-hosted uptime monitoring solution running in Dock
 - Monitor availability of internal lab services
 - Detect outages within 60 seconds
 - Establish a baseline for service health before adding more infrastructure
+- Practice NOC-style alert triage, service verification, and outage documentation
+
+---
+
+## Support / NOC Relevance
+
+This project demonstrates monitoring and alert-triage tasks used in NOC, Technical Support, Application Support, Cloud Support, and Junior Infrastructure roles:
+
+- Monitoring service availability across internal and external targets
+- Choosing the right monitor type for HTTP, TCP, and host reachability checks
+- Identifying whether an outage affects one service, one host, or multiple services
+- Verifying service health with dashboard status, ports, and host reachability
+- Preserving historical outage context for troubleshooting
+- Building a foundation for alerting and incident response
 
 ---
 
@@ -118,6 +132,14 @@ All 9 monitors were up at the time of capture. Uptime percentages reflect availa
 | Pi-hole | ✅ Up | 100% |
 | Portainer | ✅ Up | 100% |
 | Proxmox Host | ✅ Up | 100% |
+
+---
+
+## Support Incident Write-Up
+
+- [Incident 001: Monitoring Alert Triage Workflow](./incidents/001-monitoring-alert-triage-workflow.md)
+
+This incident documents the support/NOC-style process for reviewing an outage signal, checking scope, testing service reachability, verifying status, and identifying follow-up actions.
 
 ---
 
