@@ -15,6 +15,20 @@ Deployed Pi-hole as a network-wide DNS sinkhole running in Docker on the Carlvis
 - Add threat intelligence feeds (crypto mining, malicious domains)
 - Understand how DNS works as a security control point
 - Practice Docker deployment and persistent container configuration
+- Practice support-style DNS validation using query logs, direct lookups, and blocked vs allowed domain tests
+
+---
+
+## Support / Technical Support Relevance
+
+This project demonstrates common DNS troubleshooting tasks used in Technical Support, Application Support, Web Hosting Support, NOC, and Cloud Support roles:
+
+- Validating that a DNS service is running and listening on the correct port
+- Testing name resolution directly against a known DNS server
+- Comparing blocked vs allowed domain behavior
+- Reviewing query logs to confirm client activity
+- Identifying broken or deprecated blocklist sources
+- Documenting repeatable DNS troubleshooting commands
 
 ---
 
@@ -126,6 +140,14 @@ nslookup doubleclick.net 192.168.1.234
 # Should return a real IP (not blocked)
 nslookup google.com 192.168.1.234
 ```
+
+---
+
+## Support Incident Write-Up
+
+- [Incident 001: DNS Filtering Validation](./incidents/001-dns-filtering-validation.md)
+
+This incident documents the support-style validation process for DNS filtering: symptom, scope, theory, tests performed, root cause, fix, verification, and prevention.
 
 ---
 
