@@ -15,6 +15,20 @@ Deployed a full observability stack on Carlvis using Docker. Prometheus scrapes 
 - Collect per-container metrics for all Docker workloads
 - Visualize metrics in Grafana with pre-built community dashboards
 - Understand the metrics pipeline: exporters → Prometheus → Grafana
+- Practice observability troubleshooting by reviewing target health, resource metrics, and stale scrape configuration
+
+---
+
+## Support / Observability Relevance
+
+This project demonstrates observability tasks used in NOC, Cloud Support, Application Support, Junior Infrastructure, and DevOps-adjacent support roles:
+
+- Reviewing host and container health metrics
+- Checking Prometheus scrape target status
+- Identifying stale or broken monitoring configuration
+- Using dashboards to investigate CPU, memory, disk, network, and container usage
+- Understanding how exporters, metrics collection, and visualization fit together
+- Documenting monitoring gaps and follow-up actions
 
 ---
 
@@ -135,16 +149,14 @@ Per-container metrics for all Docker workloads. Containers visible at time of se
 
 ---
 
-## Prometheus Targets
-
-## Validation Evidence
+## Prometheus Targets & Validation Evidence
 
 - Dashboard screenshots confirm host-level and container-level metrics rendering correctly
 - Prometheus is successfully scraping node-exporter, cAdvisor, and itself
 - Host metrics captured include CPU, RAM, disk, network, and uptime
 - Container visibility includes Grafana, homepage, Redis, Postgres, and other workloads
 
-As of setup, two targets are actively UP:
+As of setup, three targets are actively UP:
 
 | Target | Endpoint | Status |
 |---|---|---|
@@ -153,6 +165,14 @@ As of setup, two targets are actively UP:
 | prometheus (self) | http://localhost:9090/metrics | ✅ UP |
 
 Several targets are DOWN due to stale configuration (old pfSense exporter, services using incorrect hostnames). These need to be cleaned up in `prometheus.yml`.
+
+---
+
+## Support Incident Write-Up
+
+- [Incident 001: Prometheus Target Health Review](./incidents/001-prometheus-target-health-review.md)
+
+This incident documents the observability troubleshooting process for reviewing Prometheus target health, identifying stale scrape configuration, and validating active host/container metrics.
 
 ---
 
