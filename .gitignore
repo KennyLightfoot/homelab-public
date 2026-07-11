@@ -1,0 +1,24 @@
+# Local secrets and environment files
+.env
+**/.env
+*.env.local
+
+# Backups and private configuration
+*.bak
+configs/private/
+*.xml
+*.key
+*.pem
+*.ovpn
+
+# Raw security evidence
+*.pcap
+*.pcapng
+*.vma
+*.vma.zst
+*.tar.zst
+
+# Local tooling
+.DS_Store
+__pycache__/
+*.pyc
