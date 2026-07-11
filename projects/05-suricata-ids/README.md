@@ -1,200 +1,187 @@
 # Project 5: Suricata IDS
 
-![Status](https://img.shields.io/badge/Status-Complete-success)
+![Status](https://img.shields.io/badge/Status-Stability%20Remediation-orange)
 ![Difficulty](https://img.shields.io/badge/Difficulty-Intermediate-yellow)
 
 ## Overview
 
-Deployed Suricata as a network intrusion detection system (IDS) directly on OPNsense. Suricata runs in passive PCAP mode on the WAN interface, inspecting traffic entering and leaving the lab network without dropping packets. Emerging Threats Open rulesets and abuse.ch threat intelligence feeds provide the detection signatures.
+Suricata was deployed as a passive network intrusion detection system on OPNsense. It uses PCAP mode to inspect traffic without dropping packets, with Emerging Threats Open and abuse.ch rules providing signatures and threat-intelligence coverage.
 
-This mirrors how enterprise networks use tools like Snort, Suricata, or cloud-native equivalents like AWS GuardDuty — a passive sensor that watches all traffic and alerts on known-bad patterns without blocking anything.
+The deployment successfully produced alerts and EVE JSON output, but later operational testing revealed that the service starts and then exits under memory pressure. The project is therefore **deployed but not currently considered stable**.
 
----
-
-## Screenshots
-
-![Suricata IDS Settings](./screenshots/ids-settings.png)
-*Suricata configured in PCAP live mode (IDS) on the WAN interface with EVE JSON logging enabled*
-
-![Suricata Alerts](./screenshots/alerts.png)
-*Live alerts firing from Emerging Threats rulesets — real detections from network traffic*
+This page now documents both the successful deployment and the active remediation work.
 
 ---
 
 ## Goals
 
-- Deploy network IDS on the firewall/router (OPNsense)
-- Load threat intelligence rulesets for real detection capability
-- Understand the difference between IDS and IPS mode
-- Establish a detection baseline before Phase 3 (Wazuh SIEM)
+- Deploy passive IDS monitoring on the lab firewall
+- Understand IDS versus IPS operation
+- Load selected community rulesets
+- Produce structured EVE JSON output for future SIEM ingestion
+- Establish a repeatable process for diagnosing and tuning an unstable security service
 
 ---
 
 ## Architecture
 
-```
-Internet
-    │
-    ▼
-Home Router (private gateway)
-    │
-    ▼
-OPNsense WAN (`vtnet0` on private WAN)
-    │
-    ├── Suricata (PCAP mode) ←── watches all traffic here
-    │       │
-    │       └── alerts → /var/log/suricata/eve.json
-    │
-    ├── LAN  (vtnet1 — 10.10.1.0/24)
-    ├── DMZ  (vtnet2 — 10.10.2.0/24)
-    └── Lab  (vtnet3 — 10.10.3.0/24)
+```text
+Internet / upstream network
+        |
+        v
+OPNsense WAN interface
+        |
+        +-- Suricata in passive PCAP mode
+        |       |
+        |       +-- alerts and EVE JSON logs
+        |
+        +-- LAN segment
+        +-- DMZ segment
+        +-- Security-lab segment
 ```
 
-Suricata runs as a child process of OPNsense and listens on `vtnet0` using libpcap. All traffic passing through the WAN interface — inbound from the internet and outbound from all lab segments — is inspected.
+Suricata observes traffic at the OPNsense WAN interface. The firewall still handles packet forwarding and policy enforcement; Suricata detects and logs activity without blocking it.
 
 ---
 
 ## Tech Stack
 
-| Component | Version | Role |
-|---|---|---|
-| OPNsense | 26.1.9 (amd64) | Host — router and firewall |
-| Suricata | 8.0.5 | IDS engine |
-| Emerging Threats Open | Current | Free community rule sets |
-| abuse.ch feeds | Current | Threat intelligence (malware, C2) |
+| Component | Role |
+|---|---|
+| OPNsense | Router and firewall host |
+| Suricata | Network IDS engine |
+| Emerging Threats Open | Community detection rules |
+| abuse.ch feeds | Malware and command-and-control intelligence |
+| EVE JSON | Structured event output for SIEM integration |
 
 ---
 
-## IDS vs IPS
+## IDS vs IPS Decision
 
-The most important configuration decision in this project:
+**IDS mode** was selected deliberately.
 
-**IDS (Intrusion Detection System)** — passive. Suricata inspects a copy of each packet via PCAP and generates alerts. Traffic is never modified or dropped.
+- IDS observes traffic and generates alerts.
+- IPS runs inline and may block traffic.
 
-**IPS (Intrusion Prevention System)** — active. Suricata sits inline (NFQ mode) and can drop packets in real time before they reach the destination.
-
-For this deployment: **IDS mode** was chosen deliberately. Before letting any tool drop legitimate traffic, you first need a baseline of what your network normally generates. Running IDS for a period shows you which rules fire on your traffic patterns — then you can tune before switching to IPS.
-
-Capture mode is set to **PCAP live mode** in OPNsense → Services → Intrusion Detection → Administration → Settings.
+The lab begins with passive detection so rules can be understood and tuned before any security tool is allowed to drop legitimate traffic.
 
 ---
 
-## Rulesets Enabled
+## Initial Deployment Results
 
-All rulesets sourced from Emerging Threats Open (free) and abuse.ch (free threat intelligence):
+The original deployment validated:
 
-| Ruleset | Source | Focus |
-|---|---|---|
-| abuse.ch/ThreatFox | abuse.ch | Known malware C2 IPs and domains |
-| abuse.ch/URLhaus | abuse.ch | Known malware distribution URLs |
-| ET open/botcc | Emerging Threats | Botnet command & control IPs |
-| ET open/drop | Emerging Threats | Spamhaus DROP list — known bad IP blocks |
-| ET open/emerging-attack_response | Emerging Threats | Confirms successful attacks (shell prompts, etc.) |
-| ET open/emerging-coinminer | Emerging Threats | Crypto mining malware traffic |
-| ET open/emerging-exploit | Emerging Threats | Exploit attempt payloads |
-| ET open/emerging-malware | Emerging Threats | General malware signatures |
-| ET open/emerging-scan | Emerging Threats | Port scanning and reconnaissance |
-| ET open/emerging-shellcode | Emerging Threats | Shellcode in network traffic |
-| ET open/emerging-worm | Emerging Threats | Worm propagation traffic |
-| ET open/threatview_CS_c2 | Emerging Threats | Additional C2 server detection |
+- PCAP live mode on the selected interface
+- Downloaded and enabled rulesets
+- Live alert generation
+- EVE JSON event output
+- OPNsense integration and service controls
 
-**Why not all rulesets?** OPNsense runs on a 2 GB RAM VM. Loading every available ruleset would exhaust memory. The selected set covers the highest-value categories — active exploitation, malware callbacks, and threat intelligence feeds — while leaving out noisy low-priority categories (chat, games, file sharing).
+Selected rules focused on scanning, exploitation, malware, botnet activity, command-and-control infrastructure, shellcode, and malicious URLs.
 
 ---
 
-## Deployment
+## Operational Issue Discovered
 
-Suricata is built into OPNsense — no plugin installation required. Configuration via:
+Later review showed that Suricata was not remaining active.
 
-**Services → Intrusion Detection → Administration**
+Observed behavior:
 
-Settings applied:
-- Enabled: yes
-- Capture mode: PCAP live mode (IDS)
-- Promiscuous mode: enabled
-- Interface: WAN (vtnet0)
-- Syslog alerts: enabled
-- EVE syslog output: enabled (JSON format — required for future Wazuh integration)
+1. The start command returned successfully.
+2. The Suricata process launched.
+3. System logs reported that the process was killed after memory could not be reclaimed.
+4. A related Python process was also terminated during the same pressure event.
+5. Increasing the OPNsense VM from 2 GB to 4 GB did not fully resolve the failure.
 
-Rulesets downloaded and enabled via the **Download** tab. OPNsense stores rules at:
-
-```
-/usr/local/etc/suricata/opnsense.rules/
-```
-
-The rule manifest is managed in `/usr/local/etc/suricata/installed_rules.yaml` which OPNsense generates automatically when rules are enabled and downloaded.
+Because of this evidence, the service is intentionally left stopped until tuning is completed.
 
 ---
 
-## Verification
+## Remediation Performed
 
-Confirm Suricata is running and which interface it's on:
+- Created a fresh Proxmox snapshot backup of the running OPNsense VM.
+- Confirmed disk capacity was not the immediate constraint.
+- Confirmed there was no configured swap inside OPNsense.
+- Increased OPNsense memory from 2 GB to 4 GB.
+- Restarted the service and collected new failure evidence.
+- Chose not to blindly allocate more memory before reviewing the overall lab resource plan.
 
-```bash
-ssh <opnsense-admin>@<firewall-mgmt-ip> "ps aux | grep suricata"
-# Expected: suricata -D --pcap=vtnet0 --pidfile /var/run/suricata.pid ...
-```
+This changed the project from a simple deployment exercise into an operational troubleshooting case study.
 
-Confirm rule files are present:
+---
 
-```bash
-ssh <opnsense-admin>@<firewall-mgmt-ip> "ls /usr/local/etc/suricata/opnsense.rules/*.rules"
-```
+## Current Remediation Plan
 
-Check live traffic events in EVE JSON log:
+1. Review enabled rules and remove low-value or unnecessarily broad categories.
+2. Record the loaded rule count and startup memory behavior.
+3. Confirm the intended capture interface and logging configuration.
+4. Start Suricata and validate that it remains active for an extended period.
+5. Generate one controlled benign test alert.
+6. Locate the alert in OPNsense and EVE JSON.
+7. Recheck memory consumption and system logs.
+8. Document the stable configuration before integrating Wazuh.
 
-```bash
-ssh <opnsense-admin>@<firewall-mgmt-ip> "tail -5 /var/log/suricata/eve.json"
+A dedicated Suricata or Zeek sensor VM may be evaluated later, but only after the simpler firewall-hosted design is understood and tuned.
+
+---
+
+## Validation Commands
+
+Check status:
+
+```sh
+configctl ids status
 ```
 
-Check for any alerts:
+Check for a running process:
 
-```bash
-ssh <opnsense-admin>@<firewall-mgmt-ip> "grep '\"event_type\":\"alert\"' /var/log/suricata/eve.json | wc -l"
+```sh
+pgrep -laf suricata
+```
+
+Review recent service logs:
+
+```sh
+tail -n 100 /var/log/suricata/suricata_*.log
+```
+
+Search system logs for memory-related termination:
+
+```sh
+grep -nE 'suricata|failed to reclaim memory|killed' /var/log/system/* | tail -n 50
 ```
 
 ---
 
-## Viewing Alerts
+## Skills Demonstrated
 
-## Validation Evidence
+- IDS architecture and passive packet inspection
+- Signature and ruleset selection
+- EVE JSON logging
+- OPNsense service administration
+- FreeBSD command-line troubleshooting
+- Resource-capacity analysis
+- Log-based root-cause investigation
+- Change control and backup-before-remediation discipline
+- Honest operational status reporting
 
-- IDS settings screenshot confirms passive PCAP mode on the WAN interface
-- Alerts screenshot confirms live detections from enabled rulesets
-- Verification steps confirm Suricata process, rule files, and EVE JSON logging
-- EVE JSON output is explicitly prepared for downstream SIEM ingestion
+---
 
-OPNsense WebGUI (via SSH tunnel):
+## Interview Framing
 
-```bash
-ssh -L 8443:127.0.0.1:443 <opnsense-admin>@<firewall-mgmt-ip>
-# then: https://127.0.0.1:8443
+> I deployed Suricata successfully and validated alerts and structured logs, but later discovered that the process was being terminated under memory pressure. I backed up the firewall, collected system evidence, increased resources, retested, and decided to tune the rules and architecture rather than hiding the failure or continuously adding RAM. The project is now being completed as a stability and capacity-planning exercise.
+
+---
+
+## Completion Criteria
+
+This project returns to **Complete** when:
+
+```text
+[ ] Suricata remains running reliably
+[ ] Rulesets are intentionally selected and documented
+[ ] One controlled test alert is generated
+[ ] The alert is found in the GUI and EVE JSON
+[ ] Memory and log checks show no repeated process termination
+[ ] The final configuration is ready for Wazuh ingestion
 ```
-
-Navigate to **Services → Intrusion Detection → Administration → Alerts**
-
-Alert fields: Timestamp, SID, Action, Interface, Source IP, Source Port, Destination IP, Destination Port, Alert message.
-
----
-
-## Key Concepts Learned
-
-- **IDS vs IPS** — detection (passive) vs prevention (active inline). IDS first to understand baseline, then tune before enabling IPS.
-- **PCAP mode** — Suricata receives a copy of each packet via libpcap. The firewall still processes the original; Suricata just observes.
-- **Rulesets are signatures** — each rule has a SID (Signature ID), a message string, content patterns, and protocol/port matchers. Suricata evaluates every packet against loaded rules.
-- **Flowbits** — a mechanism for multi-step detection. Rule A sets a flowbit when it sees a suspicious pattern; Rule B fires only if that flowbit is set AND it sees a follow-up pattern. This reduces false positives.
-- **EVE JSON format** — Suricata's structured logging format. All events (flows, DNS, HTTP, alerts) written as JSON to `eve.json`. This is the standard input format for SIEMs like Wazuh or Elastic.
-- **AWS parallel** — Suricata in IDS mode mirrors AWS GuardDuty: passive analysis of network traffic against threat intelligence feeds, generating findings without blocking. The difference is GuardDuty analyzes VPC Flow Logs after the fact; Suricata inspects live packets.
-
----
-
-## What's Next
-
-- Monitor Alerts tab over time to understand baseline traffic patterns
-- When alerts appear, use SID numbers to look up rule details on `rules.emergingthreats.net`
-- **Project 6: Wazuh SIEM** — ship `eve.json` alerts to Wazuh for centralized correlation and dashboards. The EVE JSON output enabled here is the integration point.
-- Switch to IPS mode (NFQ) after establishing a clean baseline with no false positives
-
----
-
-**Completed:** June 2026
