@@ -31,7 +31,8 @@ The portfolio is designed to support entry-level roles in:
 | Metrics and observability | ✅ Complete | Prometheus, Grafana, cAdvisor, Node Exporter, and InfluxDB |
 | Backup and recovery | ✅ Complete | Dedicated Proxmox backup datastore plus successful LXC restore and live firewall snapshot tests |
 | Network IDS | ⚠️ Remediation | Suricata deployed; stability and ruleset tuning are in progress after memory-pressure failures |
-| Linux and Docker hardening | 🚧 In progress | Network remediation, port inventory, secret migration, and attack-surface reduction |
+| Linux and Docker hardening | 🚧 In progress | Network remediation, service inventory, secret externalization, application modernization, and attack-surface reduction |
+| Dashboard API modernization | 🚧 In progress | Node.js 24 candidate validated with staged promotion and tested rollback; controlled production cutover remains |
 | Physical VLAN / SDN lab | 🚧 Next | Managed switch, second network interface, and Raspberry Pi infrastructure node |
 | SIEM / centralized logging | 🚧 Planned | Wazuh manager and endpoint/log ingestion |
 | AWS / Terraform | 🚧 Planned | AWS VPC architecture modeled from the homelab |
@@ -115,7 +116,7 @@ Start with these examples:
 
 1. **[OPNsense Network Segmentation](./projects/01-opnsense-segmentation/)** — subnetting, trust zones, firewall policy, routing, and validation
 2. **[Proxmox Backup and Recovery](./case-studies/01-proxmox-backup-recovery/)** — storage administration, scheduled backups, full restore testing, and operational evidence
-3. **[Grafana Monitoring Stack](./projects/04-grafana-stack/)** — observability, exporters, dashboards, and troubleshooting data
+3. **[Dashboard API Modernization and Safe Cutover](./case-studies/02-dashboard-api-modernization/)** — dependency analysis, Docker modernization, staged validation, and rollback planning
 
 ---
 
@@ -175,23 +176,28 @@ Planned encrypted hybrid-networking capstone connecting the local lab to AWS.
 
 Created physically separate backup storage, scheduled jobs, restored an LXC workload under a temporary ID, validated DHCP/routing/internet/DNS, tested a live OPNsense snapshot, and preserved recovery evidence.
 
+### 🚧 [Dashboard API Modernization and Safe Cutover](./case-studies/02-dashboard-api-modernization/)
+
+Mapped a legacy Docker application's dependencies, externalized protected configuration, modernized the runtime to Node.js 24, validated an immutable candidate image, and tested a staged promotion and rollback process. The production cutover and post-change validation remain in progress.
+
 ### 🚧 Carlvis Linux and Docker Hardening
 
-Current work includes duplicate-IP remediation, service and port inventory, migration of secrets out of Compose files, Cloudflare Tunnel review, and least-privilege reduction of backend and administrative port exposure.
+Completed duplicate-IP remediation, service and port inventory, initial secret externalization, and staged application modernization. Current work focuses on controlled cutover, credential rotation, and least-privilege reduction of backend and administrative port exposure.
 
 ---
 
 ## Current Roadmap
 
-1. Finish Carlvis credential rotation and reduce unnecessary LAN exposure.
-2. Validate the large scheduled VM backup and external-disk remount after reboot.
-3. Add the managed switch, second network interface, and Raspberry Pi as a bench lab.
-4. Extend virtual segments into physical VLANs.
-5. Stabilize Suricata and generate a controlled alert.
-6. Deploy Wazuh and onboard endpoints and network logs.
-7. Add Kali and one intentionally vulnerable target.
-8. Complete an attack → detect → investigate → remediate → retest exercise.
-9. Build the AWS/Terraform and hybrid-networking phases alongside WGU coursework.
+1. Complete the Dashboard API production cutover and post-change validation.
+2. Finish Carlvis credential rotation and reduce unnecessary LAN exposure.
+3. Validate the large scheduled VM backup and external-disk remount after reboot.
+4. Add the managed switch, second network interface, and Raspberry Pi as a bench lab.
+5. Extend virtual segments into physical VLANs.
+6. Stabilize Suricata and generate a controlled alert.
+7. Deploy Wazuh and onboard endpoints and network logs.
+8. Add Kali and one intentionally vulnerable target.
+9. Complete an attack → detect → investigate → remediate → retest exercise.
+10. Build the AWS/Terraform and hybrid-networking phases alongside WGU coursework.
 
 ---
 
@@ -203,6 +209,7 @@ The strongest framing is not "I installed a lot of tools." It is:
 - Monitored real services and used metrics to troubleshoot them
 - Identified operational risks and completed a tested recovery process
 - Investigated Linux networking problems and validated the repair
+- Modernized a Docker application through staged validation and rollback planning
 - Reduced exposed services and moved secrets out of configuration files
 - Deployed IDS tooling, collected failure evidence, and planned remediation
 - Documented what changed, why it mattered, and how the result was verified
