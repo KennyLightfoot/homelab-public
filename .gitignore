@@ -1,7 +1,14 @@
-# Local secrets and environment files
+# Environment files and secrets
 .env
 **/.env
-*.env.local
+*.env
+**/*.env
+secrets/
+**/secrets/
+
+# Permit sanitized public templates
+!*.env.example
+!**/*.env.example
 
 # Backups and private configuration
 *.bak
