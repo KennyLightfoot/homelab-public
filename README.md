@@ -1,215 +1,83 @@
-# Homelab Documentation
+# Technical Support Engineering & Infrastructure Operations Portfolio
 
-> **Support, Networking, Cloud & Security Portfolio**  
-> Hands-on infrastructure projects built on a self-hosted Proxmox environment, focused on troubleshooting, network operations, monitoring, recovery, automation, and defensive security.
+> Hands-on case studies demonstrating structured troubleshooting, Linux and network diagnostics, DNS, Docker, monitoring, backup and recovery, change control, incident investigation, and technical documentation.
 
-> **Public-repo note:** Private management addresses, credentials, tunnel details, raw captures, and admin-specific access information are redacted or generalized.
+> **Public-repository boundary:** Live credentials, customer data, private management details, raw captures, configuration exports, and unredacted operational evidence are intentionally excluded. Addressing and system labels are generalized where they are not essential to the technical lesson.
 
-## About
+## Recruiter Start Here
 
-I am building this lab while completing WGU's B.S. in Cloud and Network Engineering — AWS track.
-
-The portfolio is designed to support entry-level roles in:
-
-- Cloud Support Engineering
-- Network Support / NOC
-- Technical Support / Application Support
-- Junior Cloud Engineering
-- SOC and cloud-security-adjacent work
-
-**Certifications:** CompTIA A+, Linux Essentials, ITIL 4
-
----
-
-## Current Progress
-
-| Area | Status | Evidence |
+| Evidence | What it demonstrates | Relevant work |
 |---|---|---|
-| Network segmentation | ✅ Complete | OPNsense routing and firewall validation across LAN, DMZ, and Lab zones |
-| DNS filtering | ✅ Complete | Pi-hole DNS sinkhole with query and blocklist validation |
-| Uptime monitoring | ✅ Complete | Uptime Kuma monitoring internal and external services |
-| Metrics and observability | ✅ Complete | Prometheus, Grafana, cAdvisor, Node Exporter, and InfluxDB |
-| Backup and recovery | ✅ Complete | Dedicated Proxmox backup datastore plus successful LXC restore and live firewall snapshot tests |
-| Network IDS | ⚠️ Remediation | Suricata deployed; stability and ruleset tuning are in progress after memory-pressure failures |
-| Linux and Docker hardening | 🚧 In progress | Network remediation, port inventory, secret migration, and attack-surface reduction |
-| Physical VLAN / SDN lab | 🚧 Next | Managed switch, second network interface, and Raspberry Pi infrastructure node |
-| SIEM / centralized logging | 🚧 Planned | Wazuh manager and endpoint/log ingestion |
-| AWS / Terraform | 🚧 Planned | AWS VPC architecture modeled from the homelab |
-| Hybrid networking | 🚧 Planned | Encrypted home-lab-to-AWS connectivity |
+| **[Proxmox Backup and Recovery Validation](./case-studies/01-proxmox-backup-recovery/)** | Risk identification, change planning, real restore testing, network validation, and recovery documentation | Production support, operations, incident readiness |
+| **[Suricata Stability Remediation](./projects/05-suricata-ids/)** | Log-based investigation, memory-pressure diagnosis, safe remediation, capacity decisions, and honest status reporting | Technical support, incident investigation, security-product support |
+| **[OPNsense Network Segmentation](./projects/01-opnsense-segmentation/)** | Network design, firewall policy, routed trust zones, controlled testing, and verification | Network support, cloud support, infrastructure troubleshooting |
 
-See the current implementation handoff: **[Current-State Handoff and Pre-Hardware Runbook](./docs/current-state-handoff.md)**
+The current portfolio is strongest in infrastructure and operations. New work is being added around API, authentication, webhook, SQL, application-log, and container-dependency failures to demonstrate deeper application-support capability.
 
----
+## Professional Focus
 
-## Architecture
+Customer-facing technical support professional combining web-hosting and production-payments experience with hands-on work in networking, DNS, Linux, Docker, monitoring, recovery, and incident documentation. The goal of this repository is to show how I investigate ambiguous problems, collect evidence, make controlled changes, verify recovery, and communicate the result.
 
-```text
-Household router / existing home network
-        |
-        +-- Fedora administration laptop
-        +-- Carlvis-Ubuntu services VM
-        +-- Proxmox VE host
-                |
-                +-- OPNsense lab firewall
-                |       +-- LAN segment
-                |       +-- DMZ segment
-                |       +-- Security-lab segment
-                |
-                +-- LXC test systems
-                +-- External backup datastore
-```
+## Target Roles
 
-The household router remains the real edge router. OPNsense currently protects the isolated lab environment so firewall and routing changes do not interrupt the household network.
+- Technical Support Engineer II
+- Product Support Engineer
+- Application or Production Support Engineer
+- Integration Support Engineer
+- Cloud or Network Support Engineer
 
----
+## Support Engineering Competencies
 
-## Hardware
-
-| Machine / Device | Role |
+| Competency | Evidence in this repository |
 |---|---|
-| **Mini PC (`pve-homelab`)** | Proxmox VE host, Ryzen 7 class CPU, ~32 GB RAM, 1 TB internal NVMe |
-| **External 2 TB SSD** | Proxmox VM/container backups, configuration archives, and recovery evidence |
-| **Fedora laptop** | Administration cockpit for SSH, Git, Python, Terraform, and analysis |
-| **Main PC** | Personal workstation and burst compute |
-| **Old Lenovo** | Planned monitored endpoint and study system |
+| Structured troubleshooting | Hypothesis-driven validation across networking, monitoring, recovery, and service failures |
+| Linux and container operations | Docker-hosted services, exporters, persistent storage, service checks, and command-line verification |
+| Networking and DNS | Routed trust zones, firewall rules, DNS filtering, reachability tests, and failure isolation |
+| Monitoring and observability | Availability checks, Prometheus targets, host/container metrics, dashboards, and remediation work |
+| Incident and change discipline | Backup-before-change, evidence collection, rollback awareness, status tracking, and completion criteria |
+| Technical communication | Case studies organized around problem, impact, investigation, resolution, validation, and lessons learned |
 
-**Current networking:** OPNsense VM routes between isolated Proxmox bridges.  
-**Next networking phase:** managed VLAN switch plus a second Linux-compatible network interface.
+## Current Portfolio
 
----
+### Featured case study
 
-## VM and Container Inventory
+- ✅ **[Proxmox Backup and Recovery Validation](./case-studies/01-proxmox-backup-recovery/)** — created separate recovery storage, scheduled backups, restored a workload under a temporary identity, and validated boot, DHCP, routing, internet access, and DNS.
 
-| ID | Name | Type | RAM | Purpose |
-|---|---|---|---:|---|
-| 100 | `Carlvis-Ubuntu` | VM | 12 GB | Docker services, DNS, monitoring, dashboards, automation, and local AI services |
-| 101 | `opnsense` | VM | 4 GB | Lab router, firewall, and IDS host |
-| 200 | `lan-box` | LXC | 512 MB | Internal LAN test system |
-| 201 | `dmz-box` | LXC | 512 MB | DMZ test system |
-| 202 | `lab-box` | LXC | 512 MB | Security-lab test system |
+### Infrastructure projects
 
-### Major Carlvis Services
+1. ✅ **[OPNsense Network Segmentation](./projects/01-opnsense-segmentation/)** — routed trust zones, firewall policy, and isolation testing.
+2. ✅ **[Pi-hole DNS Filtering](./projects/02-pihole/)** — containerized DNS filtering and controlled resolution tests.
+3. ✅ **[Uptime Kuma Monitoring](./projects/03-uptime-kuma/)** — layered HTTP, TCP, and reachability monitoring.
+4. ⚠️ **[Grafana and Prometheus Monitoring](./projects/04-grafana-stack/)** — core metrics pipeline is operational; stale-target cleanup and alerting are active follow-up work.
+5. ⚠️ **[Suricata IDS Stability Remediation](./projects/05-suricata-ids/)** — deployment and event output were validated; long-running stability is being remediated after memory-pressure failures.
 
-| Service | Purpose |
-|---|---|
-| Pi-hole | Network-wide DNS filtering |
-| Uptime Kuma | Availability monitoring |
-| Grafana | Dashboards and visualization |
-| Prometheus | Metrics collection |
-| InfluxDB | Time-series storage |
-| cAdvisor | Container metrics |
-| Node Exporter | Host metrics |
-| n8n | Workflow automation |
-| Portainer | Docker administration |
-| Open WebUI | Local AI interface |
-| SearXNG | Private search |
-| Ollama | Local model runtime |
-| Qdrant | Vector database |
-| Homepage | Internal service dashboard |
+## Current Technical Focus
 
----
+The next recruiter-facing case studies are deliberately application-support oriented:
 
-## Fastest Proof for Recruiters
+- HTTP and REST API troubleshooting with `curl`
+- Authentication, authorization, and webhook-signature failures
+- PostgreSQL investigation for missing, duplicate, or inconsistent data
+- Application logs, timestamps, and request/correlation IDs
+- Docker service dependencies and environment configuration
+- Customer-safe status updates and engineering-grade escalations
 
-Start with these examples:
+New projects are promoted here only after the failure, investigation, resolution, and verification are documented.
 
-1. **[OPNsense Network Segmentation](./projects/01-opnsense-segmentation/)** — subnetting, trust zones, firewall policy, routing, and validation
-2. **[Proxmox Backup and Recovery](./case-studies/01-proxmox-backup-recovery/)** — storage administration, scheduled backups, full restore testing, and operational evidence
-3. **[Grafana Monitoring Stack](./projects/04-grafana-stack/)** — observability, exporters, dashboards, and troubleshooting data
+## Certifications and Education
 
----
+- CompTIA A+
+- CompTIA Network+
+- LPI Linux Essentials
+- ITIL 4 Foundation
+- CompTIA Security+ — in progress
+- WGU B.S. Cloud and Network Engineering, AWS track — in progress
 
-## Projects
+## Publication Standards
 
-### ✅ [Project 1: OPNsense Network Segmentation](./projects/01-opnsense-segmentation/)
-
-Built a segmented lab using OPNsense and separate LAN, DMZ, and Lab bridges. Lower-trust zones retain internet access while internal access is restricted and validated.
-
-**Skills:** Proxmox, OPNsense, subnetting, firewall rules, routing, LXC
-
-### ✅ [Project 2: Pi-hole DNS](./projects/02-pihole/)
-
-Deployed Pi-hole as a DNS sinkhole and documented blocklists, queries, DNS behavior, and validation of blocked versus allowed domains.
-
-**Skills:** DNS, Docker, Linux, ad/tracker blocking, network troubleshooting
-
-### ✅ [Project 3: Uptime Kuma Monitoring](./projects/03-uptime-kuma/)
-
-Monitors internal services, infrastructure hosts, ports, and a public endpoint through HTTP, TCP, and ICMP checks.
-
-**Skills:** service monitoring, alerting, Docker, availability validation
-
-### ✅ [Project 4: Grafana Monitoring Stack](./projects/04-grafana-stack/)
-
-Built a monitoring stack using Grafana, Prometheus, cAdvisor, Node Exporter, and InfluxDB for host and container visibility.
-
-**Skills:** observability, metrics, Docker, Prometheus, dashboards
-
-### ⚠️ [Project 5: Suricata IDS](./projects/05-suricata-ids/)
-
-Suricata was deployed on OPNsense in passive PCAP mode with Emerging Threats and abuse.ch rules. Historical alerting and EVE JSON output were validated. The current phase is operational remediation: the service exits under memory pressure, so the deployment is being tuned before it is marked stable again.
-
-**Skills:** IDS, rulesets, packet inspection, log analysis, troubleshooting, SIEM preparation
-
-### 🚧 Project 6: Wazuh SIEM
-
-Planned centralized logging, endpoint monitoring, file-integrity monitoring, and Suricata/OPNsense event ingestion.
-
-### 🚧 Project 7: AWS VPC with Terraform
-
-Planned AWS network architecture modeled after the homelab and deployed through infrastructure as code.
-
-### 🚧 Project 8: AWS Security Layer
-
-Planned CloudTrail, GuardDuty, AWS Config, KMS, Secrets Manager, and alerting controls.
-
-### 🚧 Project 9: Home Lab to AWS VPN
-
-Planned encrypted hybrid-networking capstone connecting the local lab to AWS.
-
----
-
-## Operational Case Studies
-
-### ✅ [Proxmox Backup and Recovery Validation](./case-studies/01-proxmox-backup-recovery/)
-
-Created physically separate backup storage, scheduled jobs, restored an LXC workload under a temporary ID, validated DHCP/routing/internet/DNS, tested a live OPNsense snapshot, and preserved recovery evidence.
-
-### 🚧 Carlvis Linux and Docker Hardening
-
-Current work includes duplicate-IP remediation, service and port inventory, migration of secrets out of Compose files, Cloudflare Tunnel review, and least-privilege reduction of backend and administrative port exposure.
-
----
-
-## Current Roadmap
-
-1. Finish Carlvis credential rotation and reduce unnecessary LAN exposure.
-2. Validate the large scheduled VM backup and external-disk remount after reboot.
-3. Add the managed switch, second network interface, and Raspberry Pi as a bench lab.
-4. Extend virtual segments into physical VLANs.
-5. Stabilize Suricata and generate a controlled alert.
-6. Deploy Wazuh and onboard endpoints and network logs.
-7. Add Kali and one intentionally vulnerable target.
-8. Complete an attack → detect → investigate → remediate → retest exercise.
-9. Build the AWS/Terraform and hybrid-networking phases alongside WGU coursework.
-
----
-
-## Interview Positioning
-
-The strongest framing is not "I installed a lot of tools." It is:
-
-- Built segmented networks rather than a flat Docker host
-- Monitored real services and used metrics to troubleshoot them
-- Identified operational risks and completed a tested recovery process
-- Investigated Linux networking problems and validated the repair
-- Reduced exposed services and moved secrets out of configuration files
-- Deployed IDS tooling, collected failure evidence, and planned remediation
-- Documented what changed, why it mattered, and how the result was verified
-
----
+This repository is a sanitized portfolio, not a live CMDB or operations runbook. Before publication, artifacts are reviewed against the **[Public Portfolio Checklist](./docs/publication-checklist.md)**. Suspected security issues should be handled according to **[SECURITY.md](./SECURITY.md)**.
 
 ## Connect
 
 **LinkedIn:** https://www.linkedin.com/in/kenneth-lightfoot/  
-**WGU Program:** Cloud and Network Engineering — AWS (In Progress)
+**WGU Program:** Cloud and Network Engineering — AWS track (in progress)
