@@ -83,6 +83,20 @@ The running OPNsense firewall VM was backed up in snapshot mode. The VM resumed 
 - Disaster-recovery testing
 - Evidence collection and operational documentation
 
+## Support Engineering Relevance
+
+This case study provides evidence for:
+
+- Identifying operational risk before an outage occurs
+- Distinguishing backup completion from proven recoverability
+- Planning a controlled recovery test
+- Validating operating-system, network, and service behavior after restoration
+- Preserving the original workload while testing under a temporary identity
+- Documenting verification results and cleanup steps
+- Communicating recovery readiness clearly to stakeholders
+
+---
+
 ## Interview Framing
 
 > I identified that my virtual infrastructure lacked physically separate and tested recovery storage. I deployed a dedicated Proxmox backup datastore, scheduled backups, restored a container under a temporary identity, and validated DHCP, routing, internet access, and DNS before removing the test instance. I also verified a live snapshot backup of the firewall VM.
@@ -95,7 +109,7 @@ The running OPNsense firewall VM was backed up in snapshot mode. The VM resumed 
 - Mount-point validation helps prevent failed external storage from redirecting backups onto the hypervisor root disk.
 - Larger workloads should use different schedules and retention policies than small infrastructure guests.
 
-## Next Improvements
+## Follow-up Work
 
 - Confirm scheduled backups after a full maintenance cycle.
 - Validate that the backup datastore remounts after a controlled host reboot.

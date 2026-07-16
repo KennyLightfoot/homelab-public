@@ -5,7 +5,7 @@
 
 ## Overview
 
-Deployed Uptime Kuma as a self-hosted uptime monitoring solution running in Docker on the Carlvis VM. Monitors cover both external public-facing websites and internal Carlvis services, giving a single dashboard view of the lab's health.
+Deployed Uptime Kuma as a containerized availability-monitoring service. The monitor set covers a public HTTPS endpoint, internal application services, and infrastructure hosts so network, transport, and application-level failures can be distinguished quickly.
 
 ---
 
@@ -24,63 +24,57 @@ Deployed Uptime Kuma as a self-hosted uptime monitoring solution running in Dock
 |---|---|
 | Docker | Container runtime |
 | Uptime Kuma | Uptime monitoring |
-| Carlvis-Ubuntu (VM 100) | Host on a private LAN |
+| Ubuntu services VM | Docker host on a private network |
 
 ---
 
-## Screenshots
+## Evidence Status
 
-![Uptime Kuma Dashboard](./screenshots/dashboard.png)
-*Dashboard showing 9 active monitors — all currently up, with historical outage events still visible*
+The original dashboard capture contained live service labels and management details, so it is being replaced rather than published as recruiter-facing evidence.
+
+A future sanitized capture will use generic monitor names and will demonstrate:
+
+- HTTP or HTTPS application monitoring
+- TCP service-listener monitoring
+- ICMP host reachability
+- Historical outage and recovery visibility
 
 ---
 
 ## Deployment
 
-Uptime Kuma runs as a Docker container on Carlvis with persistent storage mounted to the host:
+Uptime Kuma runs as a Docker container with persistent storage kept outside the container lifecycle:
 
 ```bash
 docker run -d \
   --name uptime-kuma \
   --restart always \
-  -p 3002:3001 \
-  -v /home/big-dog/uptime-kuma-data:/app/data \
-  louislam/uptime-kuma:latest
+  -p <monitoring-port>:3001 \
+  -v uptime-kuma-data:/app/data \
+  louislam/uptime-kuma:<tested-version>
 ```
 
-**Access:** internal-only endpoint on the private LAN
+The administrative interface is restricted to the private management environment.
 
-> Port 3002 is used on the host (instead of the default 3001) to avoid conflicts with other services.
+> The public example uses placeholders and a tested image tag rather than publishing live management details or relying on a floating image tag.
 
 ---
 
 ## Monitors Configured
 
-### External Websites — HTTP(s)
+### HTTP and HTTPS
 
-| Name | URL | Interval |
-|---|---|---|
-| Public website | Redacted public HTTPS endpoint | 60s |
+Application monitors perform full requests and validate response behavior. These are used for customer-facing endpoints and services where an open port alone would not prove the application is healthy.
 
-### Internal Services — TCP Port
+### TCP
 
-TCP Port monitors check that the service port is accepting connections. Used for internal HTTP services since they don't require SSL validation.
+TCP monitors verify that a selected service is accepting connections. They are useful for narrowing a failure to the transport or service-listener layer before deeper application troubleshooting.
 
-| Name | Host | Port | Interval |
-|---|---|---|---|
-| Grafana | Private VM host | 3000 | 60s |
-| Pi-hole | Private VM host | 8080 | 60s |
-| Portainer | Private VM host | 9000 | 60s |
-| n8n | Private VM host | 5678 | 60s |
-| Open WebUI | Private VM host | 3010 | 60s |
-| Homepage | Private VM host | 8082 | 60s |
+### ICMP
 
-### Infrastructure — Ping
+Reachability checks determine whether infrastructure hosts respond at the network layer. They help separate host or routing failures from application-specific incidents.
 
-| Name | Host | Interval |
-|---|---|---|
-| Carlvis VM | Private VM host | 60s |
-| Proxmox Host | Private hypervisor host | 60s |
+The public portfolio intentionally omits live hostnames, ports, administrative endpoints, and internal service inventories.
 
 ---
 
@@ -96,45 +90,40 @@ Uptime Kuma supports several monitor types — choosing the right one matters:
 
 ---
 
-## Results
-
-All 9 monitors were up at the time of capture. Uptime percentages reflect available history, so earlier outages remain visible even after a service recovers.
-
 ## Validation Evidence
 
-- Dashboard screenshot shows 9 active monitors
-- Mixed monitor types in use: HTTP(s), TCP Port, and Ping
-- Internal services, core hosts, and one public endpoint all have live health checks
-- Historical outage visibility is preserved for troubleshooting context
+The monitor set was validated for:
 
-| Monitor | Status | Uptime (30-day) |
-|---|---|---|
-| Carlvis VM | ✅ Up | 100% |
-| Grafana | ✅ Up | 100% |
-| Homepage | ✅ Up | 100% |
-| Public website | ✅ Up | 99.93% |
-| n8n | ✅ Up | 100% |
-| Open WebUI | ✅ Up | 56.69% |
-| Pi-hole | ✅ Up | 100% |
-| Portainer | ✅ Up | 100% |
-| Proxmox Host | ✅ Up | 100% |
+- Successful HTTP and HTTPS requests
+- Successful TCP connection checks
+- Successful network-layer reachability checks
+- Historical outage and recovery visibility
+- Persistent monitor configuration after container restart
+- Clear differentiation between host, port, and application failures
+
+Point-in-time uptime percentages are intentionally omitted because they change continuously and do not provide durable portfolio evidence.
 
 ---
 
 ## Key Concepts Learned
 
 - **Monitor type selection** — HTTP(s), TCP Port, and Ping serve different purposes; picking the wrong one gives misleading results
-- **Port mapping** — Uptime Kuma runs on container port 3001 but is exposed on host port 3002, avoiding conflicts with other services
+- **Port mapping** — container and host ports can differ, allowing services to coexist without publishing unnecessary live port details
 - **Persistent volumes** — mounting `/app/data` to the host ensures monitor configs and history survive container restarts
-- **Self-hosted vs cloud monitoring** — running your own monitoring means no external dependency, but it also means the monitor goes down if the host goes down (a limitation to solve with future redundancy)
+- **Monitoring independence** — a monitor hosted on the same failure domain as its targets may become unavailable during the same incident, so independent monitoring is preferable for critical systems
 
 ---
 
-## What's Next
+## Support Engineering Relevance
 
-- Set up notification channels (email or webhook) so outages alert without checking the dashboard
-- Add a public Status Page for external services
-- As more lab infrastructure is added (Wazuh, Suricata), add monitors here first
+This project provides evidence for:
+
+- Selecting the correct test for the suspected failure layer
+- Separating network, transport, and application availability
+- Recognizing that an open port does not guarantee application health
+- Preserving outage history for incident investigation
+- Designing monitoring with failure-domain limitations in mind
+- Documenting validation criteria and expected results clearly
 
 ---
 

@@ -1,64 +1,74 @@
-# Project 4: Grafana Monitoring Stack
+# Project 4: Grafana and Prometheus Monitoring
 
-![Status](https://img.shields.io/badge/Status-Complete-success)
+![Status](https://img.shields.io/badge/Status-Remediation%20in%20Progress-orange)
 ![Difficulty](https://img.shields.io/badge/Difficulty-Intermediate-yellow)
 
 ## Overview
 
-Deployed a full observability stack on Carlvis using Docker. Prometheus scrapes metrics from the host and all running containers, and Grafana visualizes them in real-time dashboards. This gives a single-pane view of CPU, memory, disk, network, and per-container resource usage across the entire VM.
+Deployed a containerized observability stack using Prometheus, Node Exporter, cAdvisor, Grafana, and InfluxDB.
+
+The stack collects host and container metrics, visualizes system behavior, and provides evidence for troubleshooting resource, availability, and service-dependency problems.
+
+The core metrics pipeline is operational. The project remains in remediation while stale scrape targets are removed and custom alerting evidence is completed.
 
 ---
 
 ## Goals
 
-- Collect host-level metrics (CPU, RAM, disk, network)
-- Collect per-container metrics for all Docker workloads
-- Visualize metrics in Grafana with pre-built community dashboards
-- Understand the metrics pipeline: exporters → Prometheus → Grafana
+- Collect host-level CPU, memory, filesystem, disk, load, and network metrics
+- Collect resource metrics for Docker containers
+- Store and query time-series data with Prometheus
+- Visualize metrics with Grafana
+- Distinguish exporter, scrape-target, query, and dashboard failures
+- Build custom panels and alerts that support incident investigation
 
 ---
 
-## Screenshots
+## Evidence Status
 
-![Grafana Dashboards List](./screenshots/dashboards-list.png)
-*Two dashboards configured — cAdvisor (container metrics) and Node Exporter Full (host metrics)*
+The original screenshots demonstrate that host and container metrics render successfully, but they rely primarily on imported community dashboards.
 
-![Node Exporter Full Dashboard](./screenshots/node-exporter-dashboard.png)
-*Node Exporter Full dashboard showing real-time CPU, memory, network, and disk metrics for Carlvis*
+The project will return to complete status after adding recruiter-facing evidence for:
+
+- A custom Grafana panel built from a documented PromQL query
+- A working alert rule triggered under a controlled test condition
+- A closed troubleshooting ticket showing how metrics narrowed an incident
+- A sanitized Prometheus targets view containing no stale jobs
 
 ---
 
 ## Architecture
 
+```text
+Ubuntu services VM
+        |
+        +-- Node Exporter
+        |       |
+        |       +-- Host CPU, memory, filesystem, disk,
+        |           load, and network metrics
+        |
+        +-- cAdvisor
+        |       |
+        |       +-- Docker container resource metrics
+        |
+        +-- Prometheus
+        |       |
+        |       +-- Scrapes exporters
+        |       +-- Stores time-series data
+        |       +-- Evaluates PromQL queries
+        |
+        +-- Grafana
+        |       |
+        |       +-- Dashboards
+        |       +-- Custom panels
+        |       +-- Alert rules
+        |
+        +-- InfluxDB
+                |
+                +-- Separate time-series data source
 ```
-┌─────────────────────────────────────────────────────┐
-│                Carlvis VM (private LAN)              │
-│                                                     │
-│  ┌─────────────┐    ┌─────────────┐                 │
-│  │node-exporter│    │   cAdvisor  │                 │
-│  │  :9101      │    │   :8085     │                 │
-│  │ host metrics│    │ container   │                 │
-│  │             │    │ metrics     │                 │
-│  └──────┬──────┘    └──────┬──────┘                 │
-│         │                 │                         │
-│         └────────┬────────┘                         │
-│                  ▼                                   │
-│          ┌───────────────┐                          │
-│          │  Prometheus   │ ◄── scrapes every 15s    │
-│          │    :9090      │                          │
-│          └───────┬───────┘                          │
-│                  │                                   │
-│          ┌───────▼───────┐                          │
-│          │    Grafana    │                          │
-│          │    :3000      │                          │
-│          └───────────────┘                          │
-│                                                     │
-│          ┌───────────────┐                          │
-│          │   InfluxDB    │ ◄── separate time-series │
-│          │    :8086      │     data source          │
-│          └───────────────┘                          │
-└─────────────────────────────────────────────────────┘
-```
+
+Administrative endpoints, live hostnames, ports, and internal workload names are intentionally excluded from the public portfolio.
 
 ---
 
@@ -66,112 +76,149 @@ Deployed a full observability stack on Carlvis using Docker. Prometheus scrapes 
 
 | Component | Role |
 |---|---|
-| Prometheus | Metrics collection and storage |
-| Node Exporter | Exposes host OS metrics to Prometheus |
-| cAdvisor | Exposes Docker container metrics to Prometheus |
-| Grafana | Visualization and dashboards |
+| Prometheus | Metrics collection, storage, and query engine |
+| Node Exporter | Linux host metrics |
+| cAdvisor | Docker container metrics |
+| Grafana | Dashboards, visualization, and alerting |
 | InfluxDB | Secondary time-series data source |
-| Docker | Container runtime for all components |
+| Docker | Container runtime |
 
 ---
 
-## How the Pipeline Works
+## How the Metrics Pipeline Works
 
-**Exporters** are lightweight processes that read system state and expose it in a format Prometheus can scrape. There are two running here:
+### Exporters
 
-- **Node Exporter** — reads Linux kernel stats (CPU times, memory pages, disk I/O, network bytes) and exposes them at `/metrics` on port 9101. Everything in `/proc` and `/sys` becomes a Prometheus metric.
-- **cAdvisor** (Container Advisor) — reads Docker's stats API and exposes per-container resource usage at `/metrics` on port 8085. Every container gets its own labeled metrics.
+Exporters translate operating-system or application state into the Prometheus exposition format.
 
-**Prometheus** polls both exporters every 15 seconds, parses the metrics, and stores them in its local time-series database. It also scrapes itself for internal health metrics.
+- **Node Exporter** reads Linux statistics including CPU time, memory, filesystem capacity, disk I/O, load, and network activity.
+- **cAdvisor** reads Docker runtime statistics and exposes labeled metrics for individual containers.
 
-**Grafana** connects to Prometheus as a data source and runs PromQL queries to build dashboard panels. Community dashboards are pre-built JSON files that wire up the queries automatically — you import by ID and they work immediately.
+### Prometheus
+
+Prometheus periodically requests each approved `/metrics` endpoint, parses the returned samples, and stores them in its time-series database.
+
+Prometheus is responsible for:
+
+- Scrape scheduling
+- Target-health tracking
+- Metric storage
+- Label-based filtering
+- PromQL query evaluation
+- Alert-rule evaluation
+
+### Grafana
+
+Grafana connects to Prometheus as a data source and uses PromQL queries to construct panels and alerts.
+
+Imported community dashboards were used initially to validate the pipeline. Custom queries and panels are now being added to demonstrate deeper operational understanding.
 
 ---
 
 ## Deployment
 
-All components run as Docker containers on Carlvis. Prometheus is configured with a `prometheus.yml` file that defines which targets to scrape.
+All components run as Docker containers on a private services VM.
 
-**Access:**
-- Grafana: internal-only endpoint on the private LAN
-- Prometheus: internal-only endpoint on the private LAN
-- Prometheus targets page: internal-only endpoint on the private LAN
+Prometheus uses a `prometheus.yml` configuration file to define intentional scrape jobs and target endpoints.
 
----
-
-## Dashboards
-
-Two community dashboards imported from [grafana.com](https://grafana.com/grafana/dashboards/):
-
-### Node Exporter Full (ID: 1860)
-Host-level metrics for the Carlvis VM. Live readings at time of setup:
-
-| Metric | Value |
-|---|---|
-| CPU Busy | 3.6% |
-| System Load | 9.3% |
-| RAM Used | 45.3% of 12 GB |
-| Swap Used | 40.2% of 4 GB |
-| Root Disk Used | 39.9% of 492 GB |
-| CPU Cores | 6 |
-| Uptime | 3.3 days |
-
-Sections: Quick CPU/Mem/Disk, CPU Basic, Memory Basic, Network Traffic, Disk Space, and 10+ more collapsible sections.
-
-### cAdvisor Exporter (ID: 14282)
-Per-container metrics for all Docker workloads. Containers visible at time of setup:
-
-| Container | Mean CPU | Mean Memory |
-|---|---|---|
-| cadvisor | 10.1% | 105 MB |
-| carlvis-redis | 0.306% | 1.21 MB |
-| cloudflared-n8n | 0.208% | 15.5 MB |
-| dashboard | 0.128% | 23.6 MB |
-| dashboard-api | 0.0599% | 24.3 MB |
-| grafana | 0.311% | 77.1 MB |
-| hmnp-postgres | 0.00132% | 2.49 MB |
-| homepage | 0.193% | 88.6 MB |
-| influxdb | — | 35.9 MB |
+Grafana, Prometheus, and related administrative interfaces are restricted to the private management environment.
 
 ---
 
-## Prometheus Targets
+## Dashboard Coverage
 
-## Validation Evidence
+The initial dashboard set provides visibility into:
 
-- Dashboard screenshots confirm host-level and container-level metrics rendering correctly
-- Prometheus is successfully scraping node-exporter, cAdvisor, and itself
-- Host metrics captured include CPU, RAM, disk, network, and uptime
-- Container visibility includes Grafana, homepage, Redis, Postgres, and other workloads
+### Host metrics
 
-As of setup, two targets are actively UP:
+- CPU utilization and load
+- Available and used memory
+- Filesystem capacity
+- Disk activity
+- Network traffic
+- System uptime
 
-| Target | Endpoint | Status |
-|---|---|---|
-| cadvisor | http://cadvisor:8080/metrics | ✅ UP |
-| node-exporter | http://node-exporter:9100/metrics | ✅ UP |
-| prometheus (self) | http://localhost:9090/metrics | ✅ UP |
+### Container metrics
 
-Several targets are DOWN due to stale configuration (old pfSense exporter, services using incorrect hostnames). These need to be cleaned up in `prometheus.yml`.
+- CPU usage
+- Memory consumption
+- Filesystem activity
+- Network activity
+- Container lifecycle behavior
+
+Point-in-time values and live workload names are intentionally omitted because they change continuously and expose unnecessary environment details.
+
+---
+
+## Prometheus Targets and Validation
+
+The core pipeline was validated successfully:
+
+- Node Exporter exposes host metrics
+- cAdvisor exposes container metrics
+- Prometheus scrapes both exporters
+- Prometheus collects its own health metrics
+- Grafana queries Prometheus successfully
+- Dashboard panels render host and container data
+- Metrics remain available across normal container restarts
+
+A later review identified stale scrape jobs referencing retired exporters and incorrect service names.
+
+The valid targets remained operational, but the project status was changed from complete to remediation in progress because a production-quality configuration should contain only intentional and healthy jobs.
+
+The active remediation work is to:
+
+1. Remove retired scrape jobs
+2. Correct invalid service names
+3. Reload the Prometheus configuration safely
+4. Confirm every remaining target is intentional
+5. Verify every target reports healthy
+6. Preserve the investigation as a closed support ticket
 
 ---
 
 ## Key Concepts Learned
 
-- **Pull vs push model** — Prometheus *pulls* metrics from exporters on a schedule, unlike some monitoring systems where agents *push* data. This means Prometheus controls the scrape interval and exporters are stateless.
-- **Labels** — every metric in Prometheus has key-value labels (e.g. `job="node-exporter"`, `instance="carlvis:9100"`). Labels are how you filter and aggregate across many targets.
-- **PromQL** — Prometheus Query Language is used in Grafana panels to select and transform metrics. Community dashboards handle this automatically on import.
-- **Exporters as adapters** — node-exporter and cAdvisor are not Prometheus-specific tools; they're adapters that translate system state into the Prometheus exposition format. Any tool that exposes `/metrics` in this format can be scraped.
-- **AWS parallel** — this stack mirrors what AWS CloudWatch does natively: collect host/container metrics, store time-series data, visualize in dashboards. The self-hosted version gives hands-on understanding of how the metrics pipeline works under the hood.
+- **Pull-based collection** — Prometheus controls when targets are scraped rather than waiting for agents to push metrics
+- **Exporter health versus target health** — a running exporter does not guarantee that Prometheus can resolve or reach it
+- **Labels** — key-value labels such as job and instance support filtering and aggregation
+- **PromQL** — queries select, aggregate, and transform metrics for dashboards and alerts
+- **Configuration drift** — retired services and renamed containers can leave stale targets behind
+- **Metrics versus logs** — metrics show system behavior and trends, while logs provide event-level detail
+- **Cloud comparison** — managed observability platforms provide comparable collection, storage, visualization, and alerting outcomes while handling scaling, retention, integration, and availability differently
 
 ---
 
-## What's Next
+## Completion Criteria
 
-- Clean up stale Prometheus scrape targets in `prometheus.yml` (remove pfSense, fix broken hostnames)
-- Set up Grafana alerting rules to fire when RAM or disk cross thresholds
-- When Wazuh is deployed (Project 6), add a Wazuh dashboard here for unified visibility
+This project returns to **Complete** when:
+
+```text
+[ ] Every configured Prometheus target is intentional
+[ ] Every remaining target reports healthy
+[ ] Stale exporters and incorrect service names are removed
+[ ] One custom Grafana panel uses a documented PromQL query
+[ ] One alert rule is triggered under a controlled test condition
+[ ] The alert is acknowledged and resolved through a closed support ticket
+[ ] Recruiter-facing screenshots are sanitized
+```
 
 ---
 
-**Completed:** June 2026
+## Support Engineering Relevance
+
+This project provides evidence for:
+
+- Distinguishing collection failures from visualization failures
+- Validating exporter and scrape-target health
+- Investigating stale configuration and service-name problems
+- Using labels and PromQL to narrow resource issues
+- Creating alert thresholds tied to operational impact
+- Verifying recovery after configuration changes
+- Reporting incomplete work honestly instead of hiding unhealthy targets
+
+---
+
+**Initial deployment:** June 2026
+
+**Current status:** Remediation and alert-validation work in progress
