@@ -79,6 +79,18 @@ The original deployment validated:
 
 Selected rules focused on scanning, exploitation, malware, botnet activity, command-and-control infrastructure, shellcode, and malicious URLs.
 
+## Evidence Status
+
+The original administrative screenshots were removed from the public portfolio because they exposed unnecessary configuration details and did not clearly demonstrate the current remediation state.
+
+Replacement recruiter-facing evidence will include:
+
+- A controlled benign alert
+- The matching event in EVE JSON
+- Service status after an extended stability test
+- Memory and process checks confirming the service remains healthy
+- Sanitized output with management details removed
+
 ---
 
 ## Operational Issue Discovered
@@ -164,6 +176,20 @@ grep -nE 'suricata|failed to reclaim memory|killed' /var/log/system/* | tail -n 
 - Log-based root-cause investigation
 - Change control and backup-before-remediation discipline
 - Honest operational status reporting
+
+---
+
+## Support Engineering Relevance
+
+This project provides evidence for:
+
+- Investigating a service that starts successfully but fails shortly afterward
+- Using process state and system logs instead of relying only on a successful start command
+- Separating disk, memory, configuration, and application-level hypotheses
+- Backing up a production-like system before remediation
+- Retesting after a resource change rather than assuming the change solved the problem
+- Maintaining honest service status and explicit completion criteria
+- Converting technical evidence into a concise customer or stakeholder explanation
 
 ---
 
