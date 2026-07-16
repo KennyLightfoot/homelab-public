@@ -28,16 +28,17 @@ Deployed Pi-hole as a containerized DNS filtering service. It evaluates DNS requ
 
 ---
 
-## Screenshots
+## Evidence Status
 
-![Pi-hole Dashboard](./screenshots/dashboard.png)
-*Dashboard showing service status, DNS activity, and the configured gravity database*
+The original administrative screenshots were removed because they exposed private management details and did not provide durable troubleshooting evidence.
 
-![Blocklists](./screenshots/blocklists.png)
-*Subscribed blocklists — multiple threat intelligence feeds merged into the gravity database*
+Replacement recruiter-facing evidence will demonstrate:
 
-![Query Log](./screenshots/query-log.png)
-*Live DNS query log showing real-time lookups from network clients*
+- Pi-hole service status
+- One allowed DNS lookup
+- One controlled blocked lookup
+- Gravity database rebuild success
+- Sanitized output with client and management details removed
 
 ---
 
