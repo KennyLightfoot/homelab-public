@@ -5,7 +5,7 @@
 
 ## Overview
 
-Deployed Pi-hole as a network-wide DNS sinkhole running in Docker on the Carlvis VM. Pi-hole intercepts DNS queries from devices on the home network and blocks requests that match known ad, tracking, and malicious domain lists — before the browser ever makes a connection.
+Deployed Pi-hole as a containerized DNS filtering service. It evaluates DNS requests against curated blocklists and prevents clients from resolving selected advertising, tracking, and malicious domains before an application establishes a connection.
 
 ---
 
@@ -24,14 +24,14 @@ Deployed Pi-hole as a network-wide DNS sinkhole running in Docker on the Carlvis
 |---|---|---|
 | Docker | — | Container runtime |
 | Pi-hole | v6.4 | DNS server / ad blocker |
-| Carlvis-Ubuntu | VM 100 | Host — `192.168.1.234` |
+| Ubuntu services VM | — | Docker host on a private network |
 
 ---
 
 ## Screenshots
 
 ![Pi-hole Dashboard](./screenshots/dashboard.png)
-*Dashboard showing active status, total queries, and 271,026 domains on blocklists*
+*Dashboard showing service status, DNS activity, and the configured gravity database*
 
 ![Blocklists](./screenshots/blocklists.png)
 *Subscribed blocklists — multiple threat intelligence feeds merged into the gravity database*
@@ -45,15 +45,15 @@ Deployed Pi-hole as a network-wide DNS sinkhole running in Docker on the Carlvis
 
 Every device on a network needs DNS to browse the internet — it translates human-readable names like `google.com` into IP addresses. Normally your router handles this by forwarding queries to your ISP or a public resolver like `8.8.8.8`.
 
-Pi-hole sits in between: you point your router's DNS at Pi-hole's IP (`192.168.1.234`), and Pi-hole checks every query against its blocklists before deciding whether to resolve it or return a blank response. Blocked domains never load — not just in browsers, but in every app on every device.
+Clients are configured to use Pi-hole as their DNS resolver. Pi-hole checks each query against its local policy database before either forwarding the request to an upstream resolver or returning a blocking response.
 
-This is exactly how enterprise DNS security works (Cisco Umbrella, Cloudflare Gateway) — just self-hosted.
+This lab demonstrates the transferable concepts behind DNS-layer filtering and policy enforcement. Managed enterprise platforms add centralized identity, reporting, threat intelligence, policy distribution, and high-availability capabilities beyond this self-hosted implementation.
 
 ---
 
 ## Deployment
 
-Pi-hole runs as a Docker container on Carlvis with persistent config and data mounted to the host:
+Pi-hole runs as a Docker container with persistent configuration and data mounted outside the container lifecycle:
 
 ```bash
 docker run -d \
@@ -61,46 +61,33 @@ docker run -d \
   --restart always \
   -p 53:53/tcp \
   -p 53:53/udp \
-  -p 8080:80 \
-  -e TZ=America/Chicago \
-  -v /home/big-dog/pihole/etc:/etc/pihole \
-  -v /home/big-dog/pihole/dnsmasq:/etc/dnsmasq.d \
-  pihole/pihole:latest
+  -p <admin-port>:80 \
+  -e TZ=<local-timezone> \
+  -v pihole-config:/etc/pihole \
+  -v pihole-dnsmasq:/etc/dnsmasq.d \
+  pihole/pihole:<tested-version>
 ```
 
-**Web interface:** `http://192.168.1.234:8080`
-**DNS:** `192.168.1.234:53`
+The administrative interface is restricted to the private management environment. DNS is exposed only where required for approved clients.
 
-> Port 8080 is used on the host (instead of the default 80) to avoid conflicts with other services.
+> The public example uses placeholders and a tested image tag rather than publishing live management details or relying on the floating `latest` tag.
 
 ---
 
-## Blocklists
+## Blocklist Management
 
-Pi-hole uses **gravity** — a local database of blocked domains built by downloading and merging multiple blocklists. The database is updated by running `pihole -g` (updateGravity).
+Pi-hole uses **gravity**, a local database produced by downloading, validating, and merging configured domain lists. The database is rebuilt with `pihole -g`.
 
-### Active lists
+The active sources were selected to cover advertising, tracking, cryptocurrency-mining infrastructure, and known malicious domains. Source health is reviewed periodically because third-party lists may be retired, moved, or return errors.
 
-| List | Domains Blocked | Focus |
-|---|---|---|
-| [StevenBlack Hosts](https://github.com/StevenBlack/hosts) | 83,497 | Ads, malware, fake news |
-| [AdGuard DNS](https://v.firebog.net/hosts/AdguardDNS.txt) | 155,691 | Ads and trackers |
-| [Admiral](https://v.firebog.net/hosts/Admiral.txt) | 1,677 | Ad networks |
-| [Easylist](https://v.firebog.net/hosts/Easylist.txt) | 46,524 | Ads |
-| [Easyprivacy](https://v.firebog.net/hosts/Easyprivacy.txt) | 42,549 | Trackers |
-| [Prigent Ads](https://v.firebog.net/hosts/Prigent-Ads.txt) | 4,270 | Ads |
-| [Prigent Crypto](https://v.firebog.net/hosts/Prigent-Crypto.txt) | 16,288 | Crypto mining malware |
-| [w3kbl](https://v.firebog.net/hosts/static/w3kbl.txt) | 355 | Mixed threats |
+Validation includes:
 
-**Total gravity database: ~268,000 unique domains blocked**
-
-### Dead list (needs removal)
-
-| List | Status | Action |
-|---|---|---|
-| `https://dbl.oisd.nl/` | 410 Gone | Remove from gravity sources |
-
-> To remove: Pi-hole web UI → Adlists → delete the oisd entry → run `pihole -g` to rebuild gravity.
+- Confirming each source downloads successfully
+- Removing unavailable or redundant sources
+- Rebuilding the gravity database
+- Reviewing the resulting unique-domain count
+- Testing both blocked and allowed lookups
+- Allowlisting legitimate services when false positives occur
 
 ---
 
@@ -121,10 +108,10 @@ docker exec pihole pihole status
 
 ```bash
 # Should return 0.0.0.0 (blocked) instead of a real IP
-nslookup doubleclick.net 192.168.1.234
+nslookup doubleclick.net <pihole-dns-ip>
 
 # Should return a real IP (not blocked)
-nslookup google.com 192.168.1.234
+nslookup google.com <pihole-dns-ip>
 ```
 
 ---
@@ -133,18 +120,22 @@ nslookup google.com 192.168.1.234
 
 - **DNS as a security layer** — blocking at DNS is efficient because it happens before any data is transferred; the connection is never made
 - **Gravity database** — Pi-hole merges multiple blocklists into a single SQLite database for fast lookups at query time
-- **Sinkholing** — returning a blank/invalid response to blocked queries instead of the real IP is called DNS sinkholing; it's the same technique used in enterprise threat intelligence platforms
+- **Sinkholing** — returning a controlled blocking response instead of the requested destination prevents the client from connecting to the original domain
 - **Allowlisting** — some legitimate services get caught by blocklists; Pi-hole supports exact domain, wildcard, and regex allowlisting
-- **AWS parallel** — Pi-hole is conceptually similar to Route 53 Resolver DNS Firewall, which blocks DNS queries to known malicious domains at the VPC level
+- **Cloud comparison** — managed DNS firewalls provide comparable policy outcomes while adding cloud-native integration, centralized governance, scaling, and managed availability
 
 ---
 
-## What's Next
+## Support Engineering Relevance
 
-- Remove the dead `dbl.oisd.nl` blocklist
-- Point the home router's DNS to `192.168.1.234` so all devices benefit automatically
-- Add a local DNS record for Carlvis services (e.g. `grafana.home → 192.168.1.234`) for friendlier internal URLs
-- When Wazuh is deployed (Project 6), ship Pi-hole DNS logs to Wazuh for DNS-based threat detection
+This project provides evidence for:
+
+- Separating DNS-resolution failures from broader network failures
+- Comparing expected and observed resolver behavior
+- Validating service state from both the container and client perspectives
+- Investigating false positives and applying controlled allowlisting
+- Managing persistent Docker configuration
+- Documenting reproducible verification commands and expected results
 
 ---
 
