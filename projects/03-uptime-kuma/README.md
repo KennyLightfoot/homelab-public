@@ -1,7 +1,6 @@
 # Project 3: Uptime Kuma Monitoring
 
 ![Status](https://img.shields.io/badge/Status-Complete-success)
-![Difficulty](https://img.shields.io/badge/Difficulty-Beginner-green)
 
 ## Overview
 
@@ -30,7 +29,7 @@ Deployed Uptime Kuma as a containerized availability-monitoring service. The mon
 
 ## Evidence Status
 
-The original dashboard capture contained live service labels and management details, so it is being replaced rather than published as recruiter-facing evidence.
+The original dashboard capture contained live service labels and management details, so it is being replaced rather than published as durable technical evidence.
 
 A future sanitized capture will use generic monitor names and will demonstrate:
 
@@ -114,7 +113,7 @@ Point-in-time uptime percentages are intentionally omitted because they change c
 
 ---
 
-## Support Engineering Relevance
+## Operational Relevance
 
 This project provides evidence for:
 
