@@ -1,7 +1,6 @@
 # Project 1: OPNsense Network Segmentation
 
 ![Status](https://img.shields.io/badge/Status-Complete-success)
-![Difficulty](https://img.shields.io/badge/Difficulty-Intermediate-yellow)
 
 ## Overview
 
@@ -193,7 +192,7 @@ All five tests passed. Segment isolation is confirmed.
 
 ---
 
-## Support Engineering Relevance
+## Operational Relevance
 
 This project provides evidence for:
 
