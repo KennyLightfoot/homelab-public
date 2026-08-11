@@ -1,7 +1,6 @@
 # Project 2: Pi-hole DNS
 
 ![Status](https://img.shields.io/badge/Status-Complete-success)
-![Difficulty](https://img.shields.io/badge/Difficulty-Beginner-green)
 
 ## Overview
 
@@ -32,7 +31,7 @@ Deployed Pi-hole as a containerized DNS filtering service. It evaluates DNS requ
 
 The original administrative screenshots were removed because they exposed private management details and did not provide durable troubleshooting evidence.
 
-Replacement recruiter-facing evidence will demonstrate:
+Replacement sanitized evidence will demonstrate:
 
 - Pi-hole service status
 - One allowed DNS lookup
@@ -127,7 +126,7 @@ nslookup google.com <pihole-dns-ip>
 
 ---
 
-## Support Engineering Relevance
+## Operational Relevance
 
 This project provides evidence for:
 
