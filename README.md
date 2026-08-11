@@ -1,77 +1,53 @@
-# Technical Support Engineering & Infrastructure Operations Portfolio
+# Infrastructure, Network & Cloud Support Portfolio
 
-> Hands-on case studies demonstrating structured troubleshooting, Linux and network diagnostics, DNS, Docker, monitoring, backup and recovery, change control, incident investigation, and technical documentation.
+Hands-on case studies demonstrating structured troubleshooting across Linux, networking, DNS, Docker, monitoring, backup and recovery, firewall policy, incident investigation, and technical documentation.
 
 > **Public-repository boundary:** Live credentials, customer data, private management details, raw captures, configuration exports, and unredacted operational evidence are intentionally excluded. Addressing and system labels are generalized where they are not essential to the technical lesson.
 
-## Recruiter Start Here
+## Featured Validated Work
 
-| Evidence | What it demonstrates | Relevant work |
+| Project | Evidence | What it demonstrates |
 |---|---|---|
-| **[Proxmox Backup and Recovery Validation](./case-studies/01-proxmox-backup-recovery/)** | Risk identification, change planning, real restore testing, network validation, and recovery documentation | Production support, operations, incident readiness |
-| **[Suricata Stability Remediation](./projects/05-suricata-ids/)** | Log-based investigation, memory-pressure diagnosis, safe remediation, capacity decisions, and honest status reporting | Technical support, incident investigation, security-product support |
-| **[OPNsense Network Segmentation](./projects/01-opnsense-segmentation/)** | Network design, firewall policy, routed trust zones, controlled testing, and verification | Network support, cloud support, infrastructure troubleshooting |
+| **[Proxmox Backup & Recovery Validation](./case-studies/01-proxmox-backup-recovery/)** | Built physically separate backup storage, scheduled backups, completed a real LXC restore, and validated boot, DHCP, routing, internet access, and DNS. | Recovery testing, change discipline, Linux/network validation, operational risk reduction |
+| **[OPNsense Network Segmentation](./projects/01-opnsense-segmentation/)** | Built LAN, DMZ, and Lab trust zones with routed firewall policy and verified all 5 planned isolation/reachability tests. | Network design, firewall policy, segmentation, controlled troubleshooting |
+| **[Uptime Kuma Monitoring](./projects/03-uptime-kuma/)** | Implemented HTTP/HTTPS, TCP, and ICMP monitoring to distinguish application, transport, and network-layer failures. | Availability monitoring, failure isolation, service-health validation |
+| **[Pi-hole DNS Filtering](./projects/02-pihole/)** | Deployed containerized DNS filtering with persistent configuration and controlled allowed/blocked lookup validation. | DNS troubleshooting, Docker operations, policy validation |
 
-The current portfolio is strongest in infrastructure and operations. New work is being added around API, authentication, webhook, SQL, application-log, and container-dependency failures to demonstrate deeper application-support capability.
+## Technical Profile
 
-## Professional Focus
+Customer-facing technical support experience combined with hands-on infrastructure work across networking, DNS, Linux, Docker, monitoring, recovery, and incident documentation. The portfolio focuses on how ambiguous problems are investigated, evidence is collected, changes are controlled, and recovery or expected behavior is verified.
 
-Customer-facing technical support professional combining web-hosting and production-payments experience with hands-on work in networking, DNS, Linux, Docker, monitoring, recovery, and incident documentation. The goal of this repository is to show how I investigate ambiguous problems, collect evidence, make controlled changes, verify recovery, and communicate the result.
+### Core capabilities demonstrated here
 
-## Target Roles
+- **Networking & DNS:** routed trust zones, firewall rules, DNS filtering, reachability tests, and failure isolation
+- **Linux & Containers:** Docker-hosted services, persistent storage, service checks, command-line validation, and LXC/VM operations
+- **Monitoring & Observability:** availability checks, Prometheus targets, host/container metrics, dashboards, and remediation work
+- **Incident & Change Discipline:** backup-before-change, evidence collection, rollback awareness, status tracking, and completion criteria
+- **Technical Communication:** case studies organized around problem, investigation, resolution/current state, validation, and lessons learned
 
-- Technical Support Engineer II
-- Product Support Engineer
-- Application or Production Support Engineer
-- Integration Support Engineer
-- Cloud or Network Support Engineer
+## Active Investigations
 
-## Support Engineering Competencies
+Incomplete projects remain explicitly marked as active until their documented completion criteria are met.
 
-| Competency | Evidence in this repository |
-|---|---|
-| Structured troubleshooting | Hypothesis-driven validation across networking, monitoring, recovery, and service failures |
-| Linux and container operations | Docker-hosted services, exporters, persistent storage, service checks, and command-line verification |
-| Networking and DNS | Routed trust zones, firewall rules, DNS filtering, reachability tests, and failure isolation |
-| Monitoring and observability | Availability checks, Prometheus targets, host/container metrics, dashboards, and remediation work |
-| Incident and change discipline | Backup-before-change, evidence collection, rollback awareness, status tracking, and completion criteria |
-| Technical communication | Case studies organized around problem, impact, investigation, resolution, validation, and lessons learned |
+- ⚠️ **[Suricata IDS Stability Remediation](./projects/05-suricata-ids/)** — deployment and event output were validated, but long-running stability is still being remediated after memory-pressure failures. The case study documents log-based diagnosis, resource changes, retesting, and the remaining completion criteria.
+- ⚠️ **[Grafana & Prometheus Monitoring](./projects/04-grafana-stack/)** — the core metrics pipeline is operational; stale-target cleanup, custom PromQL evidence, and alert validation remain active follow-up work.
 
-## Current Portfolio
+## Roles This Portfolio Supports
 
-### Featured case study
+- Infrastructure Support
+- Network Support
+- Cloud Support
+- Technical Support Engineer
+- Production / Application Support
 
-- ✅ **[Proxmox Backup and Recovery Validation](./case-studies/01-proxmox-backup-recovery/)** — created separate recovery storage, scheduled backups, restored a workload under a temporary identity, and validated boot, DHCP, routing, internet access, and DNS.
+## Certifications & Education
 
-### Infrastructure projects
-
-1. ✅ **[OPNsense Network Segmentation](./projects/01-opnsense-segmentation/)** — routed trust zones, firewall policy, and isolation testing.
-2. ✅ **[Pi-hole DNS Filtering](./projects/02-pihole/)** — containerized DNS filtering and controlled resolution tests.
-3. ✅ **[Uptime Kuma Monitoring](./projects/03-uptime-kuma/)** — layered HTTP, TCP, and reachability monitoring.
-4. ⚠️ **[Grafana and Prometheus Monitoring](./projects/04-grafana-stack/)** — core metrics pipeline is operational; stale-target cleanup and alerting are active follow-up work.
-5. ⚠️ **[Suricata IDS Stability Remediation](./projects/05-suricata-ids/)** — deployment and event output were validated; long-running stability is being remediated after memory-pressure failures.
-
-## Current Technical Focus
-
-The next recruiter-facing case studies are deliberately application-support oriented:
-
-- HTTP and REST API troubleshooting with `curl`
-- Authentication, authorization, and webhook-signature failures
-- PostgreSQL investigation for missing, duplicate, or inconsistent data
-- Application logs, timestamps, and request/correlation IDs
-- Docker service dependencies and environment configuration
-- Customer-safe status updates and engineering-grade escalations
-
-New projects are promoted here only after the failure, investigation, resolution, and verification are documented.
-
-## Certifications and Education
-
-- CompTIA A+
+- CompTIA Security+
 - CompTIA Network+
+- CompTIA A+
 - LPI Linux Essentials
 - ITIL 4 Foundation
-- CompTIA Security+ — in progress
-- WGU B.S. Cloud and Network Engineering, AWS track — in progress
+- WGU B.S. Cloud and Network Engineering, AWS Track — expected December 2026
 
 ## Publication Standards
 
@@ -79,5 +55,4 @@ This repository is a sanitized portfolio, not a live CMDB or operations runbook.
 
 ## Connect
 
-**LinkedIn:** https://www.linkedin.com/in/kenneth-lightfoot/  
-**WGU Program:** Cloud and Network Engineering — AWS track (in progress)
+**LinkedIn:** https://www.linkedin.com/in/kenneth-lightfoot/
