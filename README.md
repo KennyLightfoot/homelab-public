@@ -1,8 +1,8 @@
-# Infrastructure, Network & Cloud Support Portfolio
+# Infrastructure & Network Support Portfolio
 
 Hands-on case studies demonstrating structured troubleshooting across Linux, networking, DNS, Docker, monitoring, backup and recovery, firewall policy, incident investigation, and technical documentation.
 
-> **Public-repository boundary:** Live credentials, customer data, private management details, raw captures, configuration exports, and unredacted operational evidence are intentionally excluded. Addressing and system labels are generalized where they are not essential to the technical lesson.
+> **Sanitized public portfolio:** Credentials, customer data, and private management details are intentionally excluded.
 
 ## Featured Validated Work
 
@@ -31,14 +31,6 @@ Incomplete projects remain explicitly marked as active until their documented co
 
 - ⚠️ **[Suricata IDS Stability Remediation](./projects/05-suricata-ids/)** — deployment and event output were validated, but long-running stability is still being remediated after memory-pressure failures. The case study documents log-based diagnosis, resource changes, retesting, and the remaining completion criteria.
 - ⚠️ **[Grafana & Prometheus Monitoring](./projects/04-grafana-stack/)** — the core metrics pipeline is operational; stale-target cleanup, custom PromQL evidence, and alert validation remain active follow-up work.
-
-## Roles This Portfolio Supports
-
-- Infrastructure Support
-- Network Support
-- Cloud Support
-- Technical Support Engineer
-- Production / Application Support
 
 ## Certifications & Education
 
