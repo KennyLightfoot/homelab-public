@@ -1,7 +1,6 @@
 # Project 4: Grafana and Prometheus Monitoring
 
 ![Status](https://img.shields.io/badge/Status-Remediation%20in%20Progress-orange)
-![Difficulty](https://img.shields.io/badge/Difficulty-Intermediate-yellow)
 
 ## Overview
 
@@ -28,7 +27,7 @@ The core metrics pipeline is operational. The project remains in remediation whi
 
 The original screenshots demonstrate that host and container metrics render successfully, but they rely primarily on imported community dashboards.
 
-The project will return to complete status after adding recruiter-facing evidence for:
+The project will return to complete status after adding validation evidence for:
 
 - A custom Grafana panel built from a documented PromQL query
 - A working alert rule triggered under a controlled test condition
@@ -200,12 +199,12 @@ This project returns to **Complete** when:
 [ ] One custom Grafana panel uses a documented PromQL query
 [ ] One alert rule is triggered under a controlled test condition
 [ ] The alert is acknowledged and resolved through a closed support ticket
-[ ] Recruiter-facing screenshots are sanitized
+[ ] Published screenshots are sanitized
 ```
 
 ---
 
-## Support Engineering Relevance
+## Operational Relevance
 
 This project provides evidence for:
 
