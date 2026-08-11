@@ -83,7 +83,7 @@ The running OPNsense firewall VM was backed up in snapshot mode. The VM resumed 
 - Disaster-recovery testing
 - Evidence collection and operational documentation
 
-## Support Engineering Relevance
+## Operational Relevance
 
 This case study provides evidence for:
 
@@ -96,10 +96,6 @@ This case study provides evidence for:
 - Communicating recovery readiness clearly to stakeholders
 
 ---
-
-## Interview Framing
-
-> I identified that my virtual infrastructure lacked physically separate and tested recovery storage. I deployed a dedicated Proxmox backup datastore, scheduled backups, restored a container under a temporary identity, and validated DHCP, routing, internet access, and DNS before removing the test instance. I also verified a live snapshot backup of the firewall VM.
 
 ## Lessons Learned
 
