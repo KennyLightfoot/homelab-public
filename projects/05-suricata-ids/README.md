@@ -1,7 +1,6 @@
 # Project 5: Suricata IDS
 
 ![Status](https://img.shields.io/badge/Status-Stability%20Remediation-orange)
-![Difficulty](https://img.shields.io/badge/Difficulty-Intermediate-yellow)
 
 ## Overview
 
@@ -9,7 +8,7 @@ Suricata was deployed as a passive network intrusion detection system on OPNsens
 
 The deployment successfully produced alerts and EVE JSON output, but later operational testing revealed that the service starts and then exits under memory pressure. The project is therefore **deployed but not currently considered stable**.
 
-This page now documents both the successful deployment and the active remediation work.
+This page documents both the successful deployment and the active remediation work.
 
 ---
 
@@ -83,7 +82,7 @@ Selected rules focused on scanning, exploitation, malware, botnet activity, comm
 
 The original administrative screenshots were removed from the public portfolio because they exposed unnecessary configuration details and did not clearly demonstrate the current remediation state.
 
-Replacement recruiter-facing evidence will include:
+Replacement sanitized evidence will include:
 
 - A controlled benign alert
 - The matching event in EVE JSON
@@ -179,7 +178,7 @@ grep -nE 'suricata|failed to reclaim memory|killed' /var/log/system/* | tail -n 
 
 ---
 
-## Support Engineering Relevance
+## Troubleshooting Relevance
 
 This project provides evidence for:
 
@@ -190,12 +189,6 @@ This project provides evidence for:
 - Retesting after a resource change rather than assuming the change solved the problem
 - Maintaining honest service status and explicit completion criteria
 - Converting technical evidence into a concise customer or stakeholder explanation
-
----
-
-## Interview Framing
-
-> I deployed Suricata successfully and validated alerts and structured logs, but later discovered that the process was being terminated under memory pressure. I backed up the firewall, collected system evidence, increased resources, retested, and decided to tune the rules and architecture rather than hiding the failure or continuously adding RAM. The project is now being completed as a stability and capacity-planning exercise.
 
 ---
 
