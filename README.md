@@ -1,50 +1,43 @@
-# Infrastructure & Network Support Portfolio
+# Home Lab Portfolio — Infrastructure, Networking, and Monitoring
 
-Hands-on case studies demonstrating structured troubleshooting across Linux, networking, DNS, Docker, monitoring, backup and recovery, firewall policy, incident investigation, and technical documentation.
+Case studies from a Proxmox home lab, written the way I would write an incident or change record: what the problem was, what I checked, what I changed, and how I verified it. This is a personal lab, not production or employment experience — with one exception noted below.
 
-> **Sanitized public portfolio:** Credentials, customer data, and private management details are intentionally excluded.
+> **Sanitized:** credentials, customer data, public IPs, MAC addresses, and private management details are excluded. See [SECURITY.md](./SECURITY.md) and the [publication checklist](./docs/publication-checklist.md).
 
-## Featured Validated Work
+## Environment
 
-| Project | Evidence | What it demonstrates |
+| Piece | What it is |
+|---|---|
+| Host | Mini PC, AMD Ryzen 7 6800H, 32 GB RAM, 1 TB NVMe, Proxmox VE 9.1 |
+| Guests | Ubuntu VM running the Docker services below; OPNsense VM; Windows Server 2025 DC and Windows 11 client ([separate repo](https://github.com/KennyLightfoot/windows-ad-support-homelab)); LXC test boxes for the LAN, DMZ, and Lab zones |
+| Network | UniFi USW-Flex-2.5G-5 managed switch, 2.5 GbE to the Proxmox host. The physical network is one flat VLAN; all segmentation in this repo is virtual, done with Proxmox bridges and the OPNsense VM |
+| Backups | PNY CS900 2 TB SSD over USB, Proxmox storage `pve-backup`; scheduled snapshot-mode ZSTD jobs with retention, restore tested |
+| Docker services | Uptime Kuma, Prometheus, Grafana, node_exporter, cAdvisor, InfluxDB, Pi-hole, osTicket, Portainer |
+
+## Case studies and projects
+
+| | Evidence | What it shows |
 |---|---|---|
-| **[Proxmox Backup & Recovery Validation](./case-studies/01-proxmox-backup-recovery/)** | Built physically separate backup storage, scheduled backups, completed a real LXC restore, and validated boot, DHCP, routing, internet access, and DNS. | Recovery testing, change discipline, Linux/network validation, operational risk reduction |
-| **[OPNsense Network Segmentation](./projects/01-opnsense-segmentation/)** | Built LAN, DMZ, and Lab trust zones with routed firewall policy and verified all 5 planned isolation/reachability tests. | Network design, firewall policy, segmentation, controlled troubleshooting |
-| **[Uptime Kuma Monitoring](./projects/03-uptime-kuma/)** | Implemented HTTP/HTTPS, TCP, and ICMP monitoring to distinguish application, transport, and network-layer failures. | Availability monitoring, failure isolation, service-health validation |
-| **[Pi-hole DNS Filtering](./projects/02-pihole/)** | Deployed containerized DNS filtering with persistent configuration and controlled allowed/blocked lookup validation. | DNS troubleshooting, Docker operations, policy validation |
+| **[Proxmox backup and recovery validation](./case-studies/01-proxmox-backup-recovery/)** | Separate backup storage, scheduled jobs, a real LXC restore, then boot / DHCP / routing / internet / DNS checks on the restored guest | A backup is not a backup until a restore has been tested |
+| **[OPNsense virtual network segmentation](./projects/01-opnsense-segmentation/)** | LAN, DMZ, and Lab zones on Proxmox bridges, routed through OPNsense with firewall policy; all five planned isolation and reachability tests verified | Trust zones, firewall rules, controlled testing |
+| **[Uptime Kuma monitoring](./projects/03-uptime-kuma/)** | HTTP/HTTPS, TCP, and ICMP monitors that separate application, transport, and network-layer failures. Also watches my business's public website; its history has caught real HTTP timeouts and a DNS resolution failure | Availability monitoring, failure isolation |
+| **[Pi-hole DNS filtering](./projects/02-pihole/)** | Containerized DNS filtering with persistent config; allowed and blocked lookups validated | DNS troubleshooting, Docker operations |
+| **[Prometheus and Grafana](./projects/04-grafana-stack/)** | Host and container metrics (node_exporter, cAdvisor) scraped by Prometheus and dashboarded in Grafana | Metrics pipeline, PromQL |
 
-## Technical Profile
+The Uptime Kuma line is the one place this lab touches production: it monitors the real website of the business I run. No alerting is configured yet — see Backlog.
 
-Customer-facing technical support experience combined with hands-on infrastructure work across networking, DNS, Linux, Docker, monitoring, recovery, and incident documentation. The portfolio focuses on how ambiguous problems are investigated, evidence is collected, changes are controlled, and recovery or expected behavior is verified.
+## Backlog (honest status)
 
-### Core capabilities demonstrated here
+- **Alerting.** Uptime Kuma and Grafana have no notification channel configured. Next step: one Grafana alert rule fired under a controlled test, delivered to a contact point, and closed through an osTicket ticket. Until that is done, this lab has dashboards, not alerts.
+- **Grafana stale targets.** Stale scrape targets from a hosting migration still need cleanup.
+- **[Suricata IDS](./projects/05-suricata-ids/)** — parked. Deployment and EVE JSON output were validated, but the service exits under memory pressure on this host. The write-up documents the diagnosis and what remains.
+- **Backup coverage.** The scheduled jobs cover OPNsense, the LXC boxes, and the Ubuntu services VM. The Windows lab VMs and the staging VM have one-off backups only and are not yet on a schedule.
 
-- **Networking & DNS:** routed trust zones, firewall rules, DNS filtering, reachability tests, and failure isolation
-- **Linux & Containers:** Docker-hosted services, persistent storage, service checks, command-line validation, and LXC/VM operations
-- **Monitoring & Observability:** availability checks, Prometheus targets, host/container metrics, dashboards, and remediation work
-- **Incident & Change Discipline:** backup-before-change, evidence collection, rollback awareness, status tracking, and completion criteria
-- **Technical Communication:** case studies organized around problem, investigation, resolution/current state, validation, and lessons learned
+## Certifications and education
 
-## Active Investigations
-
-Incomplete projects remain explicitly marked as active until their documented completion criteria are met.
-
-- ⚠️ **[Suricata IDS Stability Remediation](./projects/05-suricata-ids/)** — deployment and event output were validated, but long-running stability is still being remediated after memory-pressure failures. The case study documents log-based diagnosis, resource changes, retesting, and the remaining completion criteria.
-- ⚠️ **[Grafana & Prometheus Monitoring](./projects/04-grafana-stack/)** — the core metrics pipeline is operational; stale-target cleanup, custom PromQL evidence, and alert validation remain active follow-up work.
-
-## Certifications & Education
-
-- CompTIA Security+
-- CompTIA Network+
-- CompTIA A+
-- LPI Linux Essentials
-- ITIL 4 Foundation
-- WGU B.S. Cloud and Network Engineering, AWS Track — expected December 2026
-
-## Publication Standards
-
-This repository is a sanitized portfolio, not a live CMDB or operations runbook. Before publication, artifacts are reviewed against the **[Public Portfolio Checklist](./docs/publication-checklist.md)**. Suspected security issues should be handled according to **[SECURITY.md](./SECURITY.md)**.
+CompTIA A+ · Network+ · Security+ · AWS Certified Cloud Practitioner · ITIL 4 Foundation · LPI Linux Essentials
+B.S. Cloud and Network Engineering (AWS track), Western Governors University — expected December 2026
 
 ## Connect
 
-**LinkedIn:** https://www.linkedin.com/in/kenneth-lightfoot/
+[linkedin.com/in/kenneth-lightfoot](https://www.linkedin.com/in/kenneth-lightfoot/) · [github.com/KennyLightfoot](https://github.com/KennyLightfoot)
