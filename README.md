@@ -1,43 +1,47 @@
 # Home Lab Portfolio — Infrastructure, Networking, and Monitoring
 
-Case studies from a Proxmox home lab, written the way I would write an incident or change record: what the problem was, what I checked, what I changed, and how I verified it. This is a personal lab, not production or employment experience — with one exception noted below.
+Case studies from a personal Proxmox lab: what I built, what I checked, what changed, and how I verified the result. Lab work is separate from employment and business operations. Uptime Kuma also monitors the public website of my own business; that monitoring target does not make the rest of this environment a production network.
 
-> **Sanitized:** credentials, customer data, public IPs, MAC addresses, and private management details are excluded. See [SECURITY.md](./SECURITY.md) and the [publication checklist](./docs/publication-checklist.md).
+**Documentation reconciled: September 24, 2026.** Status below reflects recorded evidence and known open items. This date is a documentation review, not a new live health check. Earlier test results remain historical until repeated.
 
-## Environment
+Sanitized evidence excludes credentials, customer data, public IPs, MAC addresses, and private management details. See [SECURITY.md](./SECURITY.md) and the [publication checklist](./docs/publication-checklist.md).
 
-| Piece | What it is |
-|---|---|
-| Host | Mini PC, AMD Ryzen 7 6800H, 32 GB RAM, 1 TB NVMe, Proxmox VE 9.1 |
-| Guests | Ubuntu VM running the Docker services below; OPNsense VM; Windows Server 2025 DC and Windows 11 client ([separate repo](https://github.com/KennyLightfoot/windows-ad-support-homelab)); LXC test boxes for the LAN, DMZ, and Lab zones |
-| Network | UniFi USW-Flex-2.5G-5 managed switch, 2.5 GbE to the Proxmox host. The physical network is one flat VLAN; all segmentation in this repo is virtual, done with Proxmox bridges and the OPNsense VM |
-| Backups | PNY CS900 2 TB SSD over USB, Proxmox storage `pve-backup`; scheduled snapshot-mode ZSTD jobs with retention, restore tested |
-| Docker services | Uptime Kuma, Prometheus, Grafana, node_exporter, cAdvisor, InfluxDB, Pi-hole, osTicket, Portainer |
+## Environment and recorded status
+
+| Component | Recorded configuration | Status at documentation review |
+|---|---|---|
+| Proxmox host | Ryzen 7 6800H mini PC, 32 GB RAM, 1 TB NVMe, Proxmox VE 9.1 | Existing lab host; no new health check performed for this review |
+| Guests | Ubuntu services VM, OPNsense VM, Windows Server 2025 DC, Windows 11 client, LAN/DMZ/lab LXC test boxes | Windows client rebuild pending; test LXCs were stopped at the last recorded inventory |
+| Physical network | UniFi USW-Flex-2.5G-5, 2.5 GbE uplink to Proxmox | Flat/default physical network; OPNsense is a virtual lab router, not the home network's inline gateway |
+| Virtual networking | Proxmox bridges and OPNsense firewall policy for LAN, DMZ, and lab zones | Five isolation/reachability tests passed in the recorded exercise; no new retest in this review |
+| Monitoring | Docker on Ubuntu, managed over SSH; Uptime Kuma, Prometheus, Grafana, node_exporter, cAdvisor | Nine recorded Uptime Kuma monitors: eight lab services and one production website; no notification delivery configured |
+| Backups | PNY CS900 2 TB SSD over USB, Proxmox snapshot-mode backups with retention | A guest restore was validated; scheduled coverage is incomplete |
+| Ticketing | osTicket deployed with Docker Compose | Used for lab incidents; the next AD validation ticket is still pending |
 
 ## Case studies and projects
 
-| | Evidence | What it shows |
+| Project | Recorded evidence | Limit or next verification |
 |---|---|---|
-| **[Proxmox backup and recovery validation](./case-studies/01-proxmox-backup-recovery/)** | Separate backup storage, scheduled jobs, a real LXC restore, then boot / DHCP / routing / internet / DNS checks on the restored guest | A backup is not a backup until a restore has been tested |
-| **[OPNsense virtual network segmentation](./projects/01-opnsense-segmentation/)** | LAN, DMZ, and Lab zones on Proxmox bridges, routed through OPNsense with firewall policy; all five planned isolation and reachability tests verified | Trust zones, firewall rules, controlled testing |
-| **[Uptime Kuma monitoring](./projects/03-uptime-kuma/)** | HTTP/HTTPS, TCP, and ICMP monitors that separate application, transport, and network-layer failures. Also watches my business's public website; its history has caught real HTTP timeouts and a DNS resolution failure | Availability monitoring, failure isolation |
-| **[Pi-hole DNS filtering](./projects/02-pihole/)** | Containerized DNS filtering with persistent config; allowed and blocked lookups validated | DNS troubleshooting, Docker operations |
-| **[Prometheus and Grafana](./projects/04-grafana-stack/)** | Host and container metrics (node_exporter, cAdvisor) scraped by Prometheus and dashboarded in Grafana | Metrics pipeline, PromQL |
+| [Proxmox backup and recovery](./case-studies/01-proxmox-backup-recovery/) | Restored a guest, then checked boot, DHCP, routing, and DNS | A successful test does not establish complete guest backup coverage |
+| [OPNsense virtual network segmentation](./projects/01-opnsense-segmentation/) | LAN, DMZ, and lab zones with firewall policy; five planned tests passed | Virtual lab exercise; stopped test guests need starting and rechecking before a live demonstration |
+| [Uptime Kuma monitoring](./projects/03-uptime-kuma/) | Nine monitors; production-site history includes HTTP timeouts and a DNS failure | Availability history does not establish alert delivery |
+| [Pi-hole DNS filtering](./projects/02-pihole/) | Containerized DNS filtering; allowed/blocked lookups documented | Historical validation; repeat the relevant checks when demonstrating |
+| [Prometheus and Grafana](./projects/04-grafana-stack/) | Documented host/container metrics stack | Stale targets and notification delivery remain open; do not describe the pipeline as fully validated today |
+| [Windows AD support lab](https://github.com/KennyLightfoot/windows-ad-support-homelab) | Windows Server 2025, AD DS, DNS, OUs, users/groups, file share, GPO | Windows 11 client rebuild in progress; current domain sign-in is not validated |
 
-The Uptime Kuma line is the one place this lab touches production: it monitors the real website of the business I run. No alerting is configured yet — see Backlog.
+## Known limitations and next work
 
-## Backlog (honest status)
-
-- **Alerting.** Uptime Kuma and Grafana have no notification channel configured. Next step: one Grafana alert rule fired under a controlled test, delivered to a contact point, and closed through an osTicket ticket. Until that is done, this lab has dashboards, not alerts.
-- **Grafana stale targets.** Stale scrape targets from a hosting migration still need cleanup.
-- **[Suricata IDS](./projects/05-suricata-ids/)** — parked. Deployment and EVE JSON output were validated, but the service exits under memory pressure on this host. The write-up documents the diagnosis and what remains.
-- **Backup coverage.** The scheduled jobs cover OPNsense, the LXC boxes, and the Ubuntu services VM. The Windows lab VMs and the staging VM have one-off backups only and are not yet on a schedule.
+- **Windows client:** complete the domain-controller health check, rebuild the client, then document one AD support ticket with verification.
+- **Backup coverage:** recorded scheduled jobs cover OPNsense, the LAN/DMZ/lab test containers, and the main Ubuntu services VM. Staging, rehearsal, and both Windows VMs are outside those recorded schedules. Check any one-off backups individually before relying on them.
+- **Monitoring:** no home-lab notification delivery is configured. Grafana stale-target cleanup remains open. Validated CPU/disk rules from my separate AWS coursework are not evidence of delivered lab notifications.
+- **[Suricata IDS](./projects/05-suricata-ids/):** parked; prior documentation records memory-pressure failures. It is not presented as an operational security service.
 
 ## Certifications and education
 
 CompTIA A+ · Network+ · Security+ · AWS Certified Cloud Practitioner · ITIL 4 Foundation · LPI Linux Essentials
-B.S. Cloud and Network Engineering (AWS track), Western Governors University — expected December 2026
+
+B.S. Cloud & Network Engineering (AWS track), Western Governors University — expected December 2026; 83 of 112 credits complete.
 
 ## Connect
 
-[linkedin.com/in/kenneth-lightfoot](https://www.linkedin.com/in/kenneth-lightfoot/) · [github.com/KennyLightfoot](https://github.com/KennyLightfoot)
+[LinkedIn](https://www.linkedin.com/in/kenneth-lightfoot/) · [GitHub profile](https://github.com/KennyLightfoot)
