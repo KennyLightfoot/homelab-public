@@ -28,6 +28,16 @@ Sanitized evidence excludes credentials, customer data, public IPs, MAC addresse
 | [Pi-hole DNS filtering](./projects/02-pihole/) | Containerized DNS filtering; allowed/blocked lookups documented | Historical validation; repeat the relevant checks when demonstrating |
 | [Prometheus and Grafana](./projects/04-grafana-stack/) | Documented host/container metrics stack | Stale targets and notification delivery remain open; do not describe the pipeline as fully validated today |
 | [Windows AD support lab](https://github.com/KennyLightfoot/windows-ad-support-homelab) | Windows Server 2025, AD DS, DNS, OUs, users/groups, file share, GPO | Windows 11 client rebuild in progress; current domain sign-in is not validated |
+| [Self-hosted osTicket](./projects/06-osticket/) | Docker Compose deployment used for lab incidents | Sanitized completed-ticket example still pending |
+
+## Coursework projects
+
+These summaries describe WGU coursework separately from the home lab and business operations.
+
+| Project | Completed work | Scope |
+|---|---|---|
+| [AWS monitoring server](./coursework/aws-monitoring/) | EC2 monitoring deployment, encrypted EBS, restricted security group, validated CPU/disk rules | Coursework; no notification-delivery result claimed |
+| [Multi-site network design](./coursework/multi-site-network-design/) | Three-site design, corrected overlapping addressing, GNS3 topology | Design/topology work; routing and VPN operation not validated |
 
 ## Known limitations and next work
 
